@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using DatingApp.Domain;
+using DatingApp.Data;
 
 namespace DatingApp.Data
 {
-    public class DatingAppContext : DbContext
+    public class DatingAppContext(DbContextOptions<DatingAppContext> options) : IdentityDbContext<DatingAppUser>(options)
     {
-        public DatingAppContext (DbContextOptions<DatingAppContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<DatingApp.Domain.Profile> Profile { get; set; } = default!;
         public DbSet<DatingApp.Domain.Preference> Preference { get; set; } = default!;
         public DbSet<DatingApp.Domain.Swipe> Swipe { get; set; } = default!;
@@ -23,4 +15,5 @@ namespace DatingApp.Data
         public DbSet<DatingApp.Domain.Report> Report { get; set; } = default!;
         public DbSet<DatingApp.Domain.Block> Block { get; set; } = default!;
     }
+
 }
