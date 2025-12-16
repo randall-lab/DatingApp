@@ -1,0 +1,37 @@
+﻿@page "/matchparticipants"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DatingApp.Domain
+@using DatingApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="matchparticipants/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.MatchParticipant">
+    <PropertyColumn Property="matchparticipant => matchparticipant.MatchId" />
+    <PropertyColumn Property="matchparticipant => matchparticipant.UserId" />
+
+    <TemplateColumn Context="matchparticipant">
+        <a href="@($"matchparticipants/edit?matchparticipantid={matchparticipant.MatchParticipantId}")">Edit</a> |
+        <a href="@($"matchparticipants/details?matchparticipantid={matchparticipant.MatchParticipantId}")">Details</a> |
+        <a href="@($"matchparticipants/delete?matchparticipantid={matchparticipant.MatchParticipantId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DatingAppContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

@@ -1,0 +1,39 @@
+﻿@page "/messages"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DatingApp.Domain
+@using DatingApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="messages/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Message">
+    <PropertyColumn Property="message => message.SenderId" />
+    <PropertyColumn Property="message => message.ReceiverId" />
+    <PropertyColumn Property="message => message.MessageText" />
+    <PropertyColumn Property="message => message.Timestamp" />
+
+    <TemplateColumn Context="message">
+        <a href="@($"messages/edit?messageid={message.MessageId}")">Edit</a> |
+        <a href="@($"messages/details?messageid={message.MessageId}")">Details</a> |
+        <a href="@($"messages/delete?messageid={message.MessageId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DatingAppContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

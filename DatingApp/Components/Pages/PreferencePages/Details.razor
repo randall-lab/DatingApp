@@ -1,0 +1,54 @@
+﻿@page "/preferences/details"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Preference</h2>
+    <hr />
+    @if (preference is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">UserId</dt>
+            <dd class="col-sm-10">@preference.UserId</dd>
+            <dt class="col-sm-2">PreferredGender</dt>
+            <dd class="col-sm-10">@preference.PreferredGender</dd>
+            <dt class="col-sm-2">MinAge</dt>
+            <dd class="col-sm-10">@preference.MinAge</dd>
+            <dt class="col-sm-2">MaxAge</dt>
+            <dd class="col-sm-10">@preference.MaxAge</dd>
+            <dt class="col-sm-2">LocationRadius</dt>
+            <dd class="col-sm-10">@preference.LocationRadius</dd>
+        </dl>
+        <div>
+            <a href="@($"/preferences/edit?preferenceid={preference.PreferenceId}")">Edit</a> |
+            <a href="@($"/preferences")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Preference? preference;
+
+    [SupplyParameterFromQuery]
+    private int PreferenceId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        preference = await context.Preference.FirstOrDefaultAsync(m => m.PreferenceId == PreferenceId);
+
+        if (preference is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

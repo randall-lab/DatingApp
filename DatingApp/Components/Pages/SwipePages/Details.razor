@@ -1,0 +1,50 @@
+﻿@page "/swipes/details"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Swipe</h2>
+    <hr />
+    @if (swipe is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">UserId_From</dt>
+            <dd class="col-sm-10">@swipe.UserId_From</dd>
+            <dt class="col-sm-2">UserId_To</dt>
+            <dd class="col-sm-10">@swipe.UserId_To</dd>
+            <dt class="col-sm-2">Action</dt>
+            <dd class="col-sm-10">@swipe.Action</dd>
+        </dl>
+        <div>
+            <a href="@($"/swipes/edit?swipeid={swipe.SwipeId}")">Edit</a> |
+            <a href="@($"/swipes")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Swipe? swipe;
+
+    [SupplyParameterFromQuery]
+    private int SwipeId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        swipe = await context.Swipe.FirstOrDefaultAsync(m => m.SwipeId == SwipeId);
+
+        if (swipe is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

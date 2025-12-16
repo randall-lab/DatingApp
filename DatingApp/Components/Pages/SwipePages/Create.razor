@@ -1,0 +1,54 @@
+﻿@page "/swipes/create"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Swipe</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Swipe" OnValidSubmit="AddSwipe" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="userid_from" class="form-label">UserId_From:</label> 
+                <InputText id="userid_from" @bind-Value="Swipe.UserId_From" class="form-control" /> 
+                <ValidationMessage For="() => Swipe.UserId_From" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="userid_to" class="form-label">UserId_To:</label> 
+                <InputText id="userid_to" @bind-Value="Swipe.UserId_To" class="form-control" /> 
+                <ValidationMessage For="() => Swipe.UserId_To" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="action" class="form-label">Action:</label> 
+                <InputText id="action" @bind-Value="Swipe.Action" class="form-control" /> 
+                <ValidationMessage For="() => Swipe.Action" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/swipes">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Swipe Swipe { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddSwipe()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Swipe.Add(Swipe);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/swipes");
+    }
+}

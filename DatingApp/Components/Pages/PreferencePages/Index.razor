@@ -1,0 +1,40 @@
+﻿@page "/preferences"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DatingApp.Domain
+@using DatingApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="preferences/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Preference">
+    <PropertyColumn Property="preference => preference.UserId" />
+    <PropertyColumn Property="preference => preference.PreferredGender" />
+    <PropertyColumn Property="preference => preference.MinAge" />
+    <PropertyColumn Property="preference => preference.MaxAge" />
+    <PropertyColumn Property="preference => preference.LocationRadius" />
+
+    <TemplateColumn Context="preference">
+        <a href="@($"preferences/edit?preferenceid={preference.PreferenceId}")">Edit</a> |
+        <a href="@($"preferences/details?preferenceid={preference.PreferenceId}")">Details</a> |
+        <a href="@($"preferences/delete?preferenceid={preference.PreferenceId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DatingAppContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

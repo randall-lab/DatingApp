@@ -1,0 +1,99 @@
+﻿@page "/swipes/edit"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Swipe</h2>
+<hr />
+@if (Swipe is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Swipe" OnValidSubmit="UpdateSwipe" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Swipe.SwipeId" value="@Swipe.SwipeId" />
+                <div class="mb-3">
+                    <label for="userid_from" class="form-label">UserId_From:</label>
+                    <InputText id="userid_from" @bind-Value="Swipe.UserId_From" class="form-control" />
+                    <ValidationMessage For="() => Swipe.UserId_From" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="userid_to" class="form-label">UserId_To:</label>
+                    <InputText id="userid_to" @bind-Value="Swipe.UserId_To" class="form-control" />
+                    <ValidationMessage For="() => Swipe.UserId_To" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="action" class="form-label">Action:</label>
+                    <InputText id="action" @bind-Value="Swipe.Action" class="form-control" />
+                    <ValidationMessage For="() => Swipe.Action" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/swipes">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int SwipeId { get; set; }
+
+    [SupplyParameterFromForm]
+    private Swipe? Swipe { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Swipe ??= await context.Swipe.FirstOrDefaultAsync(m => m.SwipeId == SwipeId);
+
+        if (Swipe is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateSwipe()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Swipe!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!SwipeExists(Swipe!.SwipeId))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/swipes");
+    }
+
+    private bool SwipeExists(int swipeid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Swipe.Any(e => e.SwipeId == swipeid);
+    }
+}

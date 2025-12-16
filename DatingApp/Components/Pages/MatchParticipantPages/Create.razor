@@ -1,0 +1,49 @@
+﻿@page "/matchparticipants/create"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>MatchParticipant</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="MatchParticipant" OnValidSubmit="AddMatchParticipant" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="matchid" class="form-label">MatchId:</label> 
+                <InputNumber id="matchid" @bind-Value="MatchParticipant.MatchId" class="form-control" /> 
+                <ValidationMessage For="() => MatchParticipant.MatchId" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="userid" class="form-label">UserId:</label> 
+                <InputText id="userid" @bind-Value="MatchParticipant.UserId" class="form-control" /> 
+                <ValidationMessage For="() => MatchParticipant.UserId" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/matchparticipants">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private MatchParticipant MatchParticipant { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddMatchParticipant()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.MatchParticipant.Add(MatchParticipant);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/matchparticipants");
+    }
+}

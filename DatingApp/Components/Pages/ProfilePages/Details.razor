@@ -1,0 +1,66 @@
+﻿@page "/profiles/details"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Profile</h2>
+    <hr />
+    @if (profile is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">UserId</dt>
+            <dd class="col-sm-10">@profile.UserId</dd>
+            <dt class="col-sm-2">FirstName</dt>
+            <dd class="col-sm-10">@profile.FirstName</dd>
+            <dt class="col-sm-2">LastName</dt>
+            <dd class="col-sm-10">@profile.LastName</dd>
+            <dt class="col-sm-2">Age</dt>
+            <dd class="col-sm-10">@profile.Age</dd>
+            <dt class="col-sm-2">Gender</dt>
+            <dd class="col-sm-10">@profile.Gender</dd>
+            <dt class="col-sm-2">Bio</dt>
+            <dd class="col-sm-10">@profile.Bio</dd>
+            <dt class="col-sm-2">Interest</dt>
+            <dd class="col-sm-10">@profile.Interest</dd>
+            <dt class="col-sm-2">PhotoURL</dt>
+            <dd class="col-sm-10">@profile.PhotoURL</dd>
+            <dt class="col-sm-2">RegionName</dt>
+            <dd class="col-sm-10">@profile.RegionName</dd>
+            <dt class="col-sm-2">IsVerified</dt>
+            <dd class="col-sm-10">@profile.IsVerified</dd>
+            <dt class="col-sm-2">LastActiveDate</dt>
+            <dd class="col-sm-10">@profile.LastActiveDate</dd>
+        </dl>
+        <div>
+            <a href="@($"/profiles/edit?profileid={profile.ProfileId}")">Edit</a> |
+            <a href="@($"/profiles")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Profile? profile;
+
+    [SupplyParameterFromQuery]
+    private int ProfileId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        profile = await context.Profile.FirstOrDefaultAsync(m => m.ProfileId == ProfileId);
+
+        if (profile is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

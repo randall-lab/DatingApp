@@ -1,0 +1,49 @@
+﻿@page "/matches/create"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Match</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Match" OnValidSubmit="AddMatch" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="matchdate" class="form-label">MatchDate:</label> 
+                <InputDate id="matchdate" @bind-Value="Match.MatchDate" class="form-control" /> 
+                <ValidationMessage For="() => Match.MatchDate" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="active" class="form-label">Active:</label> 
+                <InputCheckbox id="active" @bind-Value="Match.Active" class="form-check-input" /> 
+                <ValidationMessage For="() => Match.Active" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/matches">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Match Match { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddMatch()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Match.Add(Match);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/matches");
+    }
+}

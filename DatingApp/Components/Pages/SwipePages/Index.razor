@@ -1,0 +1,38 @@
+﻿@page "/swipes"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DatingApp.Domain
+@using DatingApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="swipes/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Swipe">
+    <PropertyColumn Property="swipe => swipe.UserId_From" />
+    <PropertyColumn Property="swipe => swipe.UserId_To" />
+    <PropertyColumn Property="swipe => swipe.Action" />
+
+    <TemplateColumn Context="swipe">
+        <a href="@($"swipes/edit?swipeid={swipe.SwipeId}")">Edit</a> |
+        <a href="@($"swipes/details?swipeid={swipe.SwipeId}")">Details</a> |
+        <a href="@($"swipes/delete?swipeid={swipe.SwipeId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DatingAppContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
