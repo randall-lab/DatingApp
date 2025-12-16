@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using DatingApp.Configurations.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using DatingApp.Data;
 
 namespace DatingApp.Data
 {
-    public class DatingAppContext(DbContextOptions<DatingAppContext> options) : IdentityDbContext<DatingAppUser>(options)
+    public class DatingAppContext : IdentityDbContext<DatingAppUser>
     {
+        public DatingAppContext(DbContextOptions<DatingAppContext> options)
+            : base(options)
+        {
+        }
+
         public DbSet<DatingApp.Domain.Profile> Profile { get; set; } = default!;
         public DbSet<DatingApp.Domain.Preference> Preference { get; set; } = default!;
         public DbSet<DatingApp.Domain.Swipe> Swipe { get; set; } = default!;
@@ -14,6 +19,14 @@ namespace DatingApp.Data
         public DbSet<DatingApp.Domain.Message> Message { get; set; } = default!;
         public DbSet<DatingApp.Domain.Report> Report { get; set; } = default!;
         public DbSet<DatingApp.Domain.Block> Block { get; set; } = default!;
-    }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.ApplyConfiguration(new RoleSeed());
+            builder.ApplyConfiguration(new UserSeed());
+            builder.ApplyConfiguration(new UserRoleSeed());
+        }
+    }
 }
