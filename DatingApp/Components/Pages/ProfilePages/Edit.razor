@@ -1,15 +1,18 @@
 ﻿@page "/profiles/edit"
+@using DatingApp.Data
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject UserManager<DatingAppUser> UserManager
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Edit</PageTitle>
+<PageTitle>Edit Profile</PageTitle>
 
-<h1>Edit</h1>
-
-<h2>Profile</h2>
+<h1>Edit Profile</h1>
 <hr />
+
 @if (Profile is null)
 {
     <p><em>Loading...</em></p>
@@ -18,122 +21,112 @@ else
 {
     <div class="row">
         <div class="col-md-4">
-            <EditForm method="post" Model="Profile" OnValidSubmit="UpdateProfile" FormName="edit" Enhance>
+
+            <EditForm Model="Profile" OnValidSubmit="UpdateProfile">
                 <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Profile.ProfileId" value="@Profile.ProfileId" />
+                <ValidationSummary />
+
+                <input type="hidden" @bind="Profile.ProfileId" />
+
                 <div class="mb-3">
-                    <label for="userid" class="form-label">UserId:</label>
-                    <InputText id="userid" @bind-Value="Profile.UserId" class="form-control" />
-                    <ValidationMessage For="() => Profile.UserId" class="text-danger" />
+                    <label class="form-label">First Name</label>
+                    <InputText class="form-control" @bind-value="Profile.FirstName" />
                 </div>
+
                 <div class="mb-3">
-                    <label for="firstname" class="form-label">FirstName:</label>
-                    <InputText id="firstname" @bind-Value="Profile.FirstName" class="form-control" />
-                    <ValidationMessage For="() => Profile.FirstName" class="text-danger" />
+                    <label class="form-label">Last Name</label>
+                    <InputText class="form-control" @bind-value="Profile.LastName" />
                 </div>
+
                 <div class="mb-3">
-                    <label for="lastname" class="form-label">LastName:</label>
-                    <InputText id="lastname" @bind-Value="Profile.LastName" class="form-control" />
-                    <ValidationMessage For="() => Profile.LastName" class="text-danger" />
+                    <label class="form-label">Age</label>
+                    <InputNumber class="form-control" @bind-value="Profile.Age" />
                 </div>
+
                 <div class="mb-3">
-                    <label for="age" class="form-label">Age:</label>
-                    <InputNumber id="age" @bind-Value="Profile.Age" class="form-control" />
-                    <ValidationMessage For="() => Profile.Age" class="text-danger" />
+                    <label class="form-label">Gender</label>
+                    <InputSelect class="form-control" @bind-value="Profile.Gender">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Non-Binary">Non-Binary</option>
+                    </InputSelect>
                 </div>
+
                 <div class="mb-3">
-                    <label for="gender" class="form-label">Gender:</label>
-                    <InputText id="gender" @bind-Value="Profile.Gender" class="form-control" />
-                    <ValidationMessage For="() => Profile.Gender" class="text-danger" />
+                    <label class="form-label">Bio</label>
+                    <InputText class="form-control" @bind-value="Profile.Bio" />
                 </div>
+
                 <div class="mb-3">
-                    <label for="bio" class="form-label">Bio:</label>
-                    <InputText id="bio" @bind-Value="Profile.Bio" class="form-control" />
-                    <ValidationMessage For="() => Profile.Bio" class="text-danger" />
+                    <label class="form-label">Interest</label>
+                    <InputText class="form-control" @bind-value="Profile.Interest" />
                 </div>
+
                 <div class="mb-3">
-                    <label for="interest" class="form-label">Interest:</label>
-                    <InputText id="interest" @bind-Value="Profile.Interest" class="form-control" />
-                    <ValidationMessage For="() => Profile.Interest" class="text-danger" />
+                    <label class="form-label">Photo URL</label>
+                    <InputText class="form-control" @bind-value="Profile.PhotoURL" />
                 </div>
+
                 <div class="mb-3">
-                    <label for="photourl" class="form-label">PhotoURL:</label>
-                    <InputText id="photourl" @bind-Value="Profile.PhotoURL" class="form-control" />
-                    <ValidationMessage For="() => Profile.PhotoURL" class="text-danger" />
+                    <label class="form-label">Region</label>
+                    <InputSelect class="form-control" @bind-value="Profile.RegionName">
+                        <option value="">Select region</option>
+                        <option value="Central">Central</option>
+                        <option value="East">East</option>
+                        <option value="North">North</option>
+                        <option value="North-East">North-East</option>
+                        <option value="West">West</option>
+                    </InputSelect>
                 </div>
-                <div class="mb-3">
-                    <label for="regionname" class="form-label">RegionName:</label>
-                    <InputText id="regionname" @bind-Value="Profile.RegionName" class="form-control" />
-                    <ValidationMessage For="() => Profile.RegionName" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="isverified" class="form-label">IsVerified:</label>
-                    <InputCheckbox id="isverified" @bind-Value="Profile.IsVerified" class="form-check-input" />
-                    <ValidationMessage For="() => Profile.IsVerified" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="lastactivedate" class="form-label">LastActiveDate:</label>
-                    <InputDate id="lastactivedate" @bind-Value="Profile.LastActiveDate" class="form-control" />
-                    <ValidationMessage For="() => Profile.LastActiveDate" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
+
+                <button class="btn btn-primary">Save</button>
             </EditForm>
+
         </div>
     </div>
 }
 
 <div>
-    <a href="/profiles">Back to List</a>
+    <a href="/profiles/me">Back to Profile</a>
 </div>
 
 @code {
-    [SupplyParameterFromQuery]
-    private int ProfileId { get; set; }
-
-    [SupplyParameterFromForm]
     private Profile? Profile { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            NavigationManager.NavigateTo("/Account/Login");
+            return;
+        }
+
+        var userId = await UserManager.GetUserIdAsync(await UserManager.GetUserAsync(user));
+
         using var context = DbFactory.CreateDbContext();
-        Profile ??= await context.Profile.FirstOrDefaultAsync(m => m.ProfileId == ProfileId);
+
+        Profile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (Profile is null)
         {
-            NavigationManager.NavigateTo("notfound");
+            NavigationManager.NavigateTo("/profiles/me");
         }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateProfile()
     {
         using var context = DbFactory.CreateDbContext();
+
         context.Attach(Profile!).State = EntityState.Modified;
 
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!ProfileExists(Profile!.ProfileId))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
+        Profile.LastActiveDate = DateTime.UtcNow;
 
-        NavigationManager.NavigateTo("/profiles");
-    }
+        await context.SaveChangesAsync();
 
-    private bool ProfileExists(int profileid)
-    {
-        using var context = DbFactory.CreateDbContext();
-        return context.Profile.Any(e => e.ProfileId == profileid);
+        NavigationManager.NavigateTo("/profiles/me");
     }
 }

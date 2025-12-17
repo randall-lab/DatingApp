@@ -1,0 +1,122 @@
+﻿@page "/main"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+<div class="main-container">
+    <h1 class="welcome-title">Welcome to JRomance</h1>
+    <p class="welcome-subtitle">
+        Your profile is active — start discovering meaningful connections today.
+    </p>
+
+    <section class="section-card">
+        <h2>Your Profile</h2>
+
+        @if (UserProfile is null)
+        {
+            <p>You haven't created your profile yet.</p>
+
+            <div class="action-row">
+                <a class="btn btn-primary" href="/profiles/create">Create Profile</a>
+            </div>
+        }
+        else
+        {
+            <ul>
+                <li>Last updated: @UserProfile.LastActiveDate.ToShortDateString()</li>
+            </ul>
+
+            <div class="action-row">
+                <a class="btn btn-primary" href="/profiles/edit">Edit Profile</a>
+                <a class="btn btn-outline-primary" href="/profiles/me">View Profile</a>
+                <a class="btn btn-outline-primary" href="/PreferencePages/Edit">Preferences</a>
+            </div>
+        }
+    </section>
+
+    <section class="section-card">
+        <h2>Start Matching</h2>
+        <p>Ready to meet someone new</p>
+
+        <div class="action-row">
+            <a class="btn btn-danger" href="/SwipePages/Swipe">Start Swiping</a>
+            <a class="btn btn-primary" href="/MatchPages/List">Your Matches</a>
+            <a class="btn btn-secondary" href="/MessagePages/Inbox">Messages</a>
+        </div>
+    </section>
+
+    <section class="section-card">
+        <h2>Recent Activity</h2>
+        <ul>
+            <li>You matched with <strong>Alicia</strong></li>
+            <li>You received 2 new messages</li>
+            <li>Your profile was viewed 14 times today</li>
+        </ul>
+    </section>
+
+    <section class="section-card">
+        <h2>Safety & Settings</h2>
+        <div class="action-row">
+            <a class="btn btn-outline-secondary" href="/BlockPages/List">Blocked Users</a>
+            <a class="btn btn-outline-secondary" href="/ReportPages/Create">Report Center</a>
+            <a class="btn btn-outline-secondary" href="/Account/Manage">Account Settings</a>
+        </div>
+    </section>
+</div>
+
+<style>
+    .main-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .welcome-title {
+        font-size: 2.6rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .welcome-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 40px;
+    }
+
+    .section-card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+        .section-card h2 {
+            margin-bottom: 15px;
+        }
+
+    .action-row {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+</style>
+
+@code {
+    private Profile? UserProfile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        using var context = DbFactory.CreateDbContext();
+        UserProfile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == userId);
+    }
+}
