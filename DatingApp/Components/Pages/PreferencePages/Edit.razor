@@ -1,65 +1,69 @@
 ﻿@page "/preferences/edit"
+@using DatingApp.Data
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
+@using Microsoft.AspNetCore.Identity
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<DatingAppUser> UserManager
 
-<PageTitle>Edit</PageTitle>
+@attribute [Authorize(Roles = "Administrator,User")]
 
-<h1>Edit</h1>
 
-<h2>Preference</h2>
+<PageTitle>Edit Preference</PageTitle>
+
+<h1>Edit Preference</h1>
 <hr />
+
 @if (Preference is null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Preference" OnValidSubmit="UpdatePreference" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Preference.PreferenceId" value="@Preference.PreferenceId" />
-                <div class="mb-3">
-                    <label for="userid" class="form-label">UserId:</label>
-                    <InputText id="userid" @bind-Value="Preference.UserId" class="form-control" />
-                    <ValidationMessage For="() => Preference.UserId" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="preferredgender" class="form-label">PreferredGender:</label>
-                    <InputText id="preferredgender" @bind-Value="Preference.PreferredGender" class="form-control" />
-                    <ValidationMessage For="() => Preference.PreferredGender" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="minage" class="form-label">MinAge:</label>
-                    <InputNumber id="minage" @bind-Value="Preference.MinAge" class="form-control" />
-                    <ValidationMessage For="() => Preference.MinAge" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="maxage" class="form-label">MaxAge:</label>
-                    <InputNumber id="maxage" @bind-Value="Preference.MaxAge" class="form-control" />
-                    <ValidationMessage For="() => Preference.MaxAge" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="locationradius" class="form-label">LocationRadius:</label>
-                    <InputNumber id="locationradius" @bind-Value="Preference.LocationRadius" class="form-control" />
-                    <ValidationMessage For="() => Preference.LocationRadius" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
-        </div>
-    </div>
-}
+    <EditForm Model="Preference" OnValidSubmit="UpdatePreference" FormName="edit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<div>
-    <a href="/preferences">Back to List</a>
-</div>
+        <input type="hidden" name="Preference.PreferenceId" value="@Preference.PreferenceId" />
+
+        <div class="mb-3">
+            <label class="form-label">Preferred Gender</label>
+            <InputSelect @bind-Value="Preference.PreferredGender" class="form-control">
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Non-Binary">Non-Binary</option>
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Preferred Age Range</label>
+            <div class="d-flex align-items-center">
+                <label for="minage" class="me-2">Min:</label>
+                <InputNumber id="minage" @bind-Value="Preference.MinAge" class="form-control" />
+            </div>
+            <div class="d-flex align-items-center mt-2">
+                <label for="maxage" class="me-2">Max:</label>
+                <InputNumber id="maxage" @bind-Value="Preference.MaxAge" class="form-control" />
+            </div>
+            <p class="mt-2">Selected Range: @Preference.MinAge – @Preference.MaxAge</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Search Radius (km)</label>
+            <InputNumber class="form-control" @bind-Value="Preference.LocationRadius" />
+        </div>
+
+        <button class="btn btn-primary">Save</button>
+    </EditForm>
+}
 
 @code {
     [SupplyParameterFromQuery]
-    private int PreferenceId { get; set; }
+    private int Id { get; set; }
 
     [SupplyParameterFromForm]
     private Preference? Preference { get; set; }
@@ -67,7 +71,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        Preference ??= await context.Preference.FirstOrDefaultAsync(m => m.PreferenceId == PreferenceId);
+        Preference ??= await context.Preference.FirstOrDefaultAsync(p => p.PreferenceId == Id);
 
         if (Preference is null)
         {
@@ -75,35 +79,32 @@ else
         }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdatePreference()
     {
         using var context = DbFactory.CreateDbContext();
-        context.Attach(Preference!).State = EntityState.Modified;
 
-        try
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        var userId = await UserManager.GetUserIdAsync(user);
+
+        var existing = await context.Preference.FirstOrDefaultAsync(p => p.PreferenceId == Preference!.PreferenceId);
+        if (existing is null)
         {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!PreferenceExists(Preference!.PreferenceId))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
+            NavigationManager.NavigateTo("notfound");
+            return;
         }
 
-        NavigationManager.NavigateTo("/preferences");
-    }
+        // ✅ Copy editable fields
+        existing.PreferredGender = Preference.PreferredGender;
+        existing.MinAge = Preference.MinAge;
+        existing.MaxAge = Preference.MaxAge;
+        existing.LocationRadius = Preference.LocationRadius;
 
-    private bool PreferenceExists(int preferenceid)
-    {
-        using var context = DbFactory.CreateDbContext();
-        return context.Preference.Any(e => e.PreferenceId == preferenceid);
+        // ✅ Ensure UserId is always set
+        existing.UserId = userId;
+
+        await context.SaveChangesAsync();
+
+        NavigationManager.NavigateTo($"/preferences/details?id={existing.PreferenceId}");
     }
 }

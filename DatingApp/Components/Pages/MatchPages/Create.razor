@@ -25,6 +25,26 @@
                 <InputCheckbox id="active" @bind-Value="Match.Active" class="form-check-input" /> 
                 <ValidationMessage For="() => Match.Active" class="text-danger" /> 
             </div>        
+            <div class="mb-3">
+                <label for="userid_one" class="form-label">UserId_One:</label> 
+                <InputText id="userid_one" @bind-Value="Match.UserId_One" class="form-control" /> 
+                <ValidationMessage For="() => Match.UserId_One" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="userid_two" class="form-label">UserId_Two:</label> 
+                <InputText id="userid_two" @bind-Value="Match.UserId_Two" class="form-control" /> 
+                <ValidationMessage For="() => Match.UserId_Two" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="matchedby" class="form-label">MatchedBy:</label> 
+                <InputText id="matchedby" @bind-Value="Match.MatchedBy" class="form-control" /> 
+                <ValidationMessage For="() => Match.MatchedBy" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="matchedoncriteria" class="form-label">MatchedOnCriteria:</label> 
+                <InputText id="matchedoncriteria" @bind-Value="Match.MatchedOnCriteria" class="form-control" /> 
+                <ValidationMessage For="() => Match.MatchedOnCriteria" class="text-danger" /> 
+            </div>        
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>

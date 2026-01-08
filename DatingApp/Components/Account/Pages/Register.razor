@@ -84,6 +84,8 @@
             return;
         }
 
+        await UserManager.AddToRoleAsync(user, "User");
+
         Logger.LogInformation("User created a new account with password.");
 
         // Generate email confirmation token

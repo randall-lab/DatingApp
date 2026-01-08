@@ -17,7 +17,8 @@
 <QuickGrid Class="table" Items="context.Swipe">
     <PropertyColumn Property="swipe => swipe.UserId_From" />
     <PropertyColumn Property="swipe => swipe.UserId_To" />
-    <PropertyColumn Property="swipe => swipe.Action" />
+    <PropertyColumn Property="swipe => swipe.IsLiked" />
+    <PropertyColumn Property="swipe => swipe.SwipeDate" />
 
     <TemplateColumn Context="swipe">
         <a href="@($"swipes/edit?swipeid={swipe.SwipeId}")">Edit</a> |

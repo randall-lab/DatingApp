@@ -1,0 +1,40 @@
+﻿@page "/matchcriteria"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DatingApp.Domain
+@using DatingApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="matchcriteria/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.MatchCriteria">
+    <PropertyColumn Property="matchcriteria => matchcriteria.MatchId" />
+    <PropertyColumn Property="matchcriteria => matchcriteria.PreferenceId" />
+    <PropertyColumn Property="matchcriteria => matchcriteria.ProfileId" />
+    <PropertyColumn Property="matchcriteria => matchcriteria.CriteriaType" />
+    <PropertyColumn Property="matchcriteria => matchcriteria.CriteriaValue" />
+
+    <TemplateColumn Context="matchcriteria">
+        <a href="@($"matchcriteria/edit?matchcriteriaid={matchcriteria.MatchCriteriaId}")">Edit</a> |
+        <a href="@($"matchcriteria/details?matchcriteriaid={matchcriteria.MatchCriteriaId}")">Details</a> |
+        <a href="@($"matchcriteria/delete?matchcriteriaid={matchcriteria.MatchCriteriaId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private DatingAppContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

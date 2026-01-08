@@ -1,54 +1,83 @@
 ﻿@page "/preferences/details"
+@using DatingApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<DatingAppUser> UserManager
 
-<PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
+@attribute [Authorize(Roles = "Administrator,User")]
 
-<div>
-    <h2>Preference</h2>
-    <hr />
-    @if (preference is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">UserId</dt>
-            <dd class="col-sm-10">@preference.UserId</dd>
-            <dt class="col-sm-2">PreferredGender</dt>
-            <dd class="col-sm-10">@preference.PreferredGender</dd>
-            <dt class="col-sm-2">MinAge</dt>
-            <dd class="col-sm-10">@preference.MinAge</dd>
-            <dt class="col-sm-2">MaxAge</dt>
-            <dd class="col-sm-10">@preference.MaxAge</dd>
-            <dt class="col-sm-2">LocationRadius</dt>
-            <dd class="col-sm-10">@preference.LocationRadius</dd>
-        </dl>
-        <div>
-            <a href="@($"/preferences/edit?preferenceid={preference.PreferenceId}")">Edit</a> |
-            <a href="@($"/preferences")">Back to List</a>
+
+<PageTitle>Preference Details</PageTitle>
+
+<h1>Preference Details</h1>
+<hr />
+
+@if (Preference is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card" style="max-width:600px;">
+        <div class="card-body">
+            <h3>My Preferences</h3>
+
+            <p><strong>Preferred Gender:</strong> @(string.IsNullOrEmpty(Preference.PreferredGender) ? "Not set" : Preference.PreferredGender)</p>
+            <p><strong>Age Range:</strong> @Preference.MinAge – @Preference.MaxAge</p>
+            <p><strong>Search Radius:</strong> @Preference.LocationRadius km</p>
+
+            <div class="mt-3">
+                <a class="btn btn-primary" href="@($"/preferences/edit?id={Preference.PreferenceId}")">Edit</a>
+                <a class="btn btn-secondary" href="/preferences">Back to List</a>
+            </div>
         </div>
-    }
-</div>
+    </div>
+}
 
 @code {
-    private Preference? preference;
+    private Preference? Preference;
 
     [SupplyParameterFromQuery]
-    private int PreferenceId { get; set; }
+    private int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        preference = await context.Preference.FirstOrDefaultAsync(m => m.PreferenceId == PreferenceId);
 
-        if (preference is null)
+        // Get current user + role
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        var userId = await UserManager.GetUserIdAsync(user);
+        var isAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
+
+        if (isAdmin)
+        {
+            // Admin can fetch by Id
+            Preference = await context.Preference.FirstOrDefaultAsync(p => p.PreferenceId == Id);
+        }
+        else
+        {
+            // Normal user: always fetch their own record
+            Preference = await context.Preference.FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (Preference == null)
+            {
+                NavigationManager.NavigateTo("notfound");
+                return;
+            }
+        }
+
+        if (Preference is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
     }
+
+
 }

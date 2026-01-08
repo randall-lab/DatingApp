@@ -1,66 +1,102 @@
 ﻿@page "/profiles/details"
+@using DatingApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<DatingAppUser> UserManager
 
-<PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
+@attribute [Authorize(Roles = "Administrator,User")]
 
-<div>
-    <h2>Profile</h2>
-    <hr />
-    @if (profile is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">UserId</dt>
-            <dd class="col-sm-10">@profile.UserId</dd>
-            <dt class="col-sm-2">FirstName</dt>
-            <dd class="col-sm-10">@profile.FirstName</dd>
-            <dt class="col-sm-2">LastName</dt>
-            <dd class="col-sm-10">@profile.LastName</dd>
-            <dt class="col-sm-2">Age</dt>
-            <dd class="col-sm-10">@profile.Age</dd>
-            <dt class="col-sm-2">Gender</dt>
-            <dd class="col-sm-10">@profile.Gender</dd>
-            <dt class="col-sm-2">Bio</dt>
-            <dd class="col-sm-10">@profile.Bio</dd>
-            <dt class="col-sm-2">Interest</dt>
-            <dd class="col-sm-10">@profile.Interest</dd>
-            <dt class="col-sm-2">PhotoURL</dt>
-            <dd class="col-sm-10">@profile.PhotoURL</dd>
-            <dt class="col-sm-2">RegionName</dt>
-            <dd class="col-sm-10">@profile.RegionName</dd>
-            <dt class="col-sm-2">IsVerified</dt>
-            <dd class="col-sm-10">@profile.IsVerified</dd>
-            <dt class="col-sm-2">LastActiveDate</dt>
-            <dd class="col-sm-10">@profile.LastActiveDate</dd>
-        </dl>
-        <div>
-            <a href="@($"/profiles/edit?profileid={profile.ProfileId}")">Edit</a> |
-            <a href="@($"/profiles")">Back to List</a>
+
+<PageTitle>Profile Details</PageTitle>
+
+<h1>Profile Details</h1>
+<hr />
+
+@if (profile is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card" style="max-width:600px;">
+        <div class="card-body text-center">
+            <!-- ✅ Show photo instead of raw URL -->
+            @if (!string.IsNullOrEmpty(profile.PhotoURL))
+            {
+                <img src="@profile.PhotoURL" class="img-thumbnail mb-3" style="max-width:200px;" />
+            }
+            else
+            {
+                <p><em>No photo uploaded</em></p>
+            }
+
+            <h3>@profile.FirstName @profile.LastName</h3>
+            <p><strong>Age:</strong> @profile.Age</p>
+            <p><strong>Gender:</strong> @(string.IsNullOrEmpty(profile.Gender) ? "N/A" : profile.Gender)</p>
+            <p><strong>Region:</strong> @(string.IsNullOrEmpty(profile.RegionName) ? "N/A" : profile.RegionName)</p>
+
+            <p><strong>Bio:</strong> @(string.IsNullOrEmpty(profile.Bio) ? "No bio yet" : profile.Bio)</p>
+            <p><strong>Interests:</strong> @(string.IsNullOrEmpty(profile.Interest) ? "No interests set" : profile.Interest)</p>
+
+            <!-- ✅ Friendlier display for verification -->
+            <p>
+                <strong>Status:</strong>
+                @(profile.IsVerified ? "✔ Verified" : "Not Verified")
+            </p>
+
+            <p><small>Last Active: @profile.LastActiveDate.ToString("g")</small></p>
+
+            <div class="mt-3">
+                <a class="btn btn-primary" href="@($"/profiles/edit?id={profile.ProfileId}")">Edit</a>
+                <a class="btn btn-secondary" href="/profiles">Back to List</a>
+            </div>
         </div>
-    }
-</div>
+    </div>
+}
 
 @code {
     private Profile? profile;
 
     [SupplyParameterFromQuery]
-    private int ProfileId { get; set; }
+    private int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        profile = await context.Profile.FirstOrDefaultAsync(m => m.ProfileId == ProfileId);
 
-        if (profile is null)
-        {
-            NavigationManager.NavigateTo("notfound");
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+
+        if (user == null)
+        { 
+            // Not logged in, redirect or handle gracefully 
+            NavigationManager.NavigateTo("login"); 
+            return; 
+        } 
+        var userId = await UserManager.GetUserIdAsync(user); 
+        var isAdmin = await UserManager.IsInRoleAsync(user, "Administrator"); 
+
+        if (isAdmin) 
+        { 
+            // Admin can fetch by Id parameter 
+            profile = await context.Profile.FirstOrDefaultAsync(p => p.ProfileId == Id); 
+        } 
+        else 
+        { 
+            // Normal user: always fetch their own record 
+            profile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == userId); 
+
+            if (profile == null) 
+            { 
+                NavigationManager.NavigateTo("notfound"); 
+                return; 
+            } 
         }
     }
 }

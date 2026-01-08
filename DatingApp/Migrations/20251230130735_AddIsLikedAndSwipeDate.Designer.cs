@@ -4,6 +4,7 @@ using DatingApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatingApp.Migrations
 {
     [DbContext(typeof(DatingAppContext))]
-    partial class DatingAppContextModelSnapshot : ModelSnapshot
+    [Migration("20251230130735_AddIsLikedAndSwipeDate")]
+    partial class AddIsLikedAndSwipeDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,15 +94,15 @@ namespace DatingApp.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "03cf6842-ff0c-4cf5-95ad-a50eb90f48ad",
+                            ConcurrencyStamp = "2cf08762-7019-4474-b013-0d3c08888ab9",
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJe9D05RVC0NBzrYp/M1tm4htq37P0vqGUSnVErrhwbqfId1iQDXMPwWxiVUAZZOyA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBuvgIVxcpbjlm0uyOK8HGNmqULCNUu7X41jFDZj6bi93VDdFsF5qkM+fC83E/rauQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "93afecb1-be11-4998-954e-37d1cea95418",
+                            SecurityStamp = "763156a3-0376-45cd-adca-631def66ec1b",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -319,34 +322,6 @@ namespace DatingApp.Migrations
                     b.HasKey("ReportId");
 
                     b.ToTable("Report");
-                });
-
-            modelBuilder.Entity("DatingApp.Domain.Swipe", b =>
-                {
-                    b.Property<int>("SwipeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SwipeId"));
-
-                    b.Property<bool>("IsDisliked")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsLiked")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("SwipeDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId_From")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId_To")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SwipeId");
-
-                    b.ToTable("Swipe");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

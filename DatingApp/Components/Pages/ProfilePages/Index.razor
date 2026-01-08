@@ -1,4 +1,5 @@
 ﻿@page "/profiles"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
@@ -6,13 +7,11 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 
+@attribute [Authorize(Roles = "Administrator")]
+
 <PageTitle>Index</PageTitle>
 
 <h1>Index</h1>
-
-<p>
-    <a href="profiles/create">Create New</a>
-</p>
 
 <QuickGrid Class="table" Items="context.Profile">
     <PropertyColumn Property="profile => profile.UserId" />
@@ -28,10 +27,11 @@
     <PropertyColumn Property="profile => profile.LastActiveDate" />
 
     <TemplateColumn Context="profile">
-        <a href="@($"profiles/edit?profileid={profile.ProfileId}")">Edit</a> |
-        <a href="@($"profiles/details?profileid={profile.ProfileId}")">Details</a> |
-        <a href="@($"profiles/delete?profileid={profile.ProfileId}")">Delete</a>
+        <a href="@($"profiles/edit?Id={profile.ProfileId}")">Edit</a> |
+        <a href="@($"profiles/details?Id={profile.ProfileId}")">Details</a> |
+        <a href="@($"profiles/delete?Id={profile.ProfileId}")">Delete</a>
     </TemplateColumn>
+
 </QuickGrid>
 
 @code {

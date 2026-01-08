@@ -26,8 +26,12 @@
             <dd class="col-sm-10">@swipe.UserId_To</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">Action</dt>
-            <dd class="col-sm-10">@swipe.Action</dd>
+            <dt class="col-sm-2">IsLiked</dt>
+            <dd class="col-sm-10">@swipe.IsLiked</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">SwipeDate</dt>
+            <dd class="col-sm-10">@swipe.SwipeDate</dd>
         </dl>
         <EditForm method="post" Model="swipe" OnValidSubmit="DeleteSwipe" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(swipe is null)">Delete</button> |

@@ -33,9 +33,14 @@ else
                     <ValidationMessage For="() => Swipe.UserId_To" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="action" class="form-label">Action:</label>
-                    <InputText id="action" @bind-Value="Swipe.Action" class="form-control" />
-                    <ValidationMessage For="() => Swipe.Action" class="text-danger" />
+                    <label for="isliked" class="form-label">IsLiked:</label>
+                    <InputCheckbox id="isliked" @bind-Value="Swipe.IsLiked" class="form-check-input" />
+                    <ValidationMessage For="() => Swipe.IsLiked" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="swipedate" class="form-label">SwipeDate:</label>
+                    <InputDate id="swipedate" @bind-Value="Swipe.SwipeDate" class="form-control" />
+                    <ValidationMessage For="() => Swipe.SwipeDate" class="text-danger" />
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>

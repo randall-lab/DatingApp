@@ -16,6 +16,11 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
             <div class="mb-3">
+                <label for="matchid" class="form-label">MatchId:</label> 
+                <InputNumber id="matchid" @bind-Value="Message.MatchId" class="form-control" /> 
+                <ValidationMessage For="() => Message.MatchId" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
                 <label for="senderid" class="form-label">SenderId:</label> 
                 <InputText id="senderid" @bind-Value="Message.SenderId" class="form-control" /> 
                 <ValidationMessage For="() => Message.SenderId" class="text-danger" /> 

@@ -17,6 +17,10 @@
 <QuickGrid Class="table" Items="context.Match">
     <PropertyColumn Property="match => match.MatchDate" />
     <PropertyColumn Property="match => match.Active" />
+    <PropertyColumn Property="match => match.UserId_One" />
+    <PropertyColumn Property="match => match.UserId_Two" />
+    <PropertyColumn Property="match => match.MatchedBy" />
+    <PropertyColumn Property="match => match.MatchedOnCriteria" />
 
     <TemplateColumn Context="match">
         <a href="@($"matches/edit?matchid={match.MatchId}")">Edit</a> |

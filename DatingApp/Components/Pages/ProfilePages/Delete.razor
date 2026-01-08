@@ -1,8 +1,12 @@
 ﻿@page "/profiles/delete"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+
+@attribute [Authorize(Roles = "Administrator")]
+
 
 <PageTitle>Delete</PageTitle>
 

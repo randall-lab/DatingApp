@@ -1,10 +1,14 @@
 ﻿@page "/preferences"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+
+@attribute [Authorize(Roles = "Administrator")]
+
 
 <PageTitle>Index</PageTitle>
 

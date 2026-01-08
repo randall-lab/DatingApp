@@ -1,64 +1,79 @@
 ﻿@page "/preferences/create"
+@using DatingApp.Data
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
+@using Microsoft.AspNetCore.Identity
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<DatingAppUser> UserManager
 
-<PageTitle>Create</PageTitle>
+@attribute [Authorize(Roles = "User")]
 
-<h1>Create</h1>
 
-<h2>Preference</h2>
+<PageTitle>Create Preference</PageTitle>
+
+<h1>Create Preference</h1>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <EditForm method="post" Model="Preference" OnValidSubmit="AddPreference" FormName="create" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="userid" class="form-label">UserId:</label> 
-                <InputText id="userid" @bind-Value="Preference.UserId" class="form-control" /> 
-                <ValidationMessage For="() => Preference.UserId" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="preferredgender" class="form-label">PreferredGender:</label> 
-                <InputText id="preferredgender" @bind-Value="Preference.PreferredGender" class="form-control" /> 
-                <ValidationMessage For="() => Preference.PreferredGender" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="minage" class="form-label">MinAge:</label> 
-                <InputNumber id="minage" @bind-Value="Preference.MinAge" class="form-control" /> 
-                <ValidationMessage For="() => Preference.MinAge" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="maxage" class="form-label">MaxAge:</label> 
-                <InputNumber id="maxage" @bind-Value="Preference.MaxAge" class="form-control" /> 
-                <ValidationMessage For="() => Preference.MaxAge" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="locationradius" class="form-label">LocationRadius:</label> 
-                <InputNumber id="locationradius" @bind-Value="Preference.LocationRadius" class="form-control" /> 
-                <ValidationMessage For="() => Preference.LocationRadius" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
-        </EditForm>
-    </div>
-</div>
 
-<div>
-    <a href="/preferences">Back to List</a>
-</div>
+<EditForm Model="Preference" OnValidSubmit="CreatePreference" FormName="create">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Preferred Gender</label>
+        <InputSelect @bind-Value="Preference.PreferredGender" class="form-control">
+            <option value="">Select gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Non-Binary">Non-Binary</option>
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Preferred Age Range (default 18–35)</label>
+        <div class="d-flex align-items-center">
+            <label for="minage" class="me-2">Min:</label>
+            <InputNumber id="minage" @bind-Value="Preference.MinAge" class="form-control" />
+        </div>
+        <div class="d-flex align-items-center mt-2">
+            <label for="maxage" class="me-2">Max:</label>
+            <InputNumber id="maxage" @bind-Value="Preference.MaxAge" class="form-control" />
+        </div>
+        <p class="mt-2">Selected Range: @Preference.MinAge – @Preference.MaxAge</p>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Search Radius (km, default 10)</label>
+        <InputNumber class="form-control" @bind-Value="Preference.LocationRadius" />
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+</EditForm>
 
 @code {
-    [SupplyParameterFromForm]
-    private Preference Preference { get; set; } = new();
+    private Preference Preference { get; set; } = new Preference
+    {
+        MinAge = 18,
+        MaxAge = 35,
+        LocationRadius = 10
+    };
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task AddPreference()
+    private async Task CreatePreference()
     {
         using var context = DbFactory.CreateDbContext();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        var userId = await UserManager.GetUserIdAsync(user);
+
+        // ✅ Tie Preference to the current user
+        Preference.UserId = userId;
+
         context.Preference.Add(Preference);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/preferences");
+
+        NavigationManager.NavigateTo($"/preferences/details?id={Preference.PreferenceId}");
     }
 }

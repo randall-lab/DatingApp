@@ -4,7 +4,9 @@
 <div class="page">
     @if (ShowSidebar())
     {
-        <div class="sidebar"> <NavMenu /> </div>
+        <div class="sidebar">
+            <NavMenu />
+        </div>
     }
 
     <main>
@@ -29,9 +31,10 @@
     {
         var url = NavigationManager.Uri.ToLower();
 
-        return url.EndsWith("/profiles/create") ||
-               url.EndsWith("/profiles/edit") ||
-               url.EndsWith("/profiles/me");
+        // ✅ Only show sidebar on these pages
+        return url.Contains("/profiles") ||
+               url.Contains("/preferences") ||
+               url.Contains("/swipe") ||
+               url.Contains("/messages");
     }
-
 }
