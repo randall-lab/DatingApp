@@ -1,65 +1,51 @@
-﻿@using DatingApp.Data
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Identity
-@inject NavigationManager NavigationManager
-@inject SignInManager<DatingAppUser> SignInManager
-@inject IHttpContextAccessor HttpContextAccessor
+﻿@using Microsoft.AspNetCore.Components.Authorization
 
-<div class="nav-scrollable">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/main" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu"></span> Home
-            </NavLink>
-        </div>
+<nav>
+    <ul class="nav flex-column">
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/profiles/details">
-                <span class="bi bi-person-fill-nav-menu"></span> Profile
-            </NavLink>
-        </div>
+        <!-- Always visible -->
+        <li class="nav-item">
+            <a class="nav-link" href="/main">Home</a>
+        </li>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/preferences/details">
-                <span class="bi bi-gear-fill-nav-menu"></span> Preferences
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/swipe">
-                <span class="bi bi-heart-fill-nav-menu"></span> Swipe
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <button class="nav-link" @onclick="Logout">
-                        <span class="bi bi-box-arrow-right"></span> Logout
-                    </button>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
+        <!-- User links -->
+        <AuthorizeView Roles="User">
+            <li class="nav-item">
+                <a class="nav-link" href="/profiles/create">Create Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/preferences/create">Preferences</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/swipes/create">Start Swiping</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/matches">Matches</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/messages/create">Messages</a>
+            </li>
         </AuthorizeView>
-    </nav>
-</div>
 
-@code {
-    private async Task Logout()
-    {
-        // Clear the Identity cookie explicitly
-        await HttpContextAccessor.HttpContext!.SignOutAsync(IdentityConstants.ApplicationScheme);
+        <!-- Admin links -->
+        <AuthorizeView Roles="Administrator">
+            <li class="nav-item">
+                <a class="nav-link" href="/profiles">Manage Profiles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/preferences">Manage Preferences</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/ReportPages/List">Reports</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BlockPages/List">Blocked Users</a>
+            </li>
+        </AuthorizeView>
 
-        // Also call SignInManager for consistency
-        await SignInManager.SignOutAsync();
-
-        // Redirect to landing page
-        NavigationManager.NavigateTo("/", true);
-    }
-}
+        <!-- Logout -->
+        <li class="nav-item">
+            <a class="nav-link text-danger" href="/">Logout</a>
+        </li>
+    </ul>
+</nav>

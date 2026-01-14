@@ -91,15 +91,15 @@ namespace DatingApp.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "03cf6842-ff0c-4cf5-95ad-a50eb90f48ad",
+                            ConcurrencyStamp = "6342a290-4861-403d-bb34-7b4ec14be86a",
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJe9D05RVC0NBzrYp/M1tm4htq37P0vqGUSnVErrhwbqfId1iQDXMPwWxiVUAZZOyA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGWPc2q2VsZ8WrOnHTEFVrk+VAHYBIDIh2GaFEykgW5lNt7YUBewE9xI2/bOl3mS1w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "93afecb1-be11-4998-954e-37d1cea95418",
+                            SecurityStamp = "a0413eb3-5cef-4d71-98bc-8fd0551e5108",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
@@ -328,9 +328,6 @@ namespace DatingApp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SwipeId"));
-
-                    b.Property<bool>("IsDisliked")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsLiked")
                         .HasColumnType("bit");

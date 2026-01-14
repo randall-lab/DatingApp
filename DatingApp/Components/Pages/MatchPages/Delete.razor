@@ -1,4 +1,5 @@
 ﻿@page "/matches/delete"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
@@ -32,14 +33,6 @@
         <dl class="row">
             <dt class="col-sm-2">UserId_Two</dt>
             <dd class="col-sm-10">@match.UserId_Two</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">MatchedBy</dt>
-            <dd class="col-sm-10">@match.MatchedBy</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">MatchedOnCriteria</dt>
-            <dd class="col-sm-10">@match.MatchedOnCriteria</dd>
         </dl>
         <EditForm method="post" Model="match" OnValidSubmit="DeleteMatch" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(match is null)">Delete</button> |

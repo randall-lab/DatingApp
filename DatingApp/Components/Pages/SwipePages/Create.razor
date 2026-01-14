@@ -1,59 +1,192 @@
 ﻿@page "/swipes/create"
+@using DatingApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
-@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject IDbContextFactory<DatingAppContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<DatingAppUser> UserManager
 @inject NavigationManager NavigationManager
 
-<PageTitle>Create</PageTitle>
+@attribute [Authorize(Roles = "User")]
 
-<h1>Create</h1>
+<PageTitle>Swipe</PageTitle>
 
-<h2>Swipe</h2>
+<h1>Swipe</h1>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <EditForm method="post" Model="Swipe" OnValidSubmit="AddSwipe" FormName="create" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="userid_from" class="form-label">UserId_From:</label> 
-                <InputText id="userid_from" @bind-Value="Swipe.UserId_From" class="form-control" /> 
-                <ValidationMessage For="() => Swipe.UserId_From" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="userid_to" class="form-label">UserId_To:</label> 
-                <InputText id="userid_to" @bind-Value="Swipe.UserId_To" class="form-control" /> 
-                <ValidationMessage For="() => Swipe.UserId_To" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="isliked" class="form-label">IsLiked:</label> 
-                <InputCheckbox id="isliked" @bind-Value="Swipe.IsLiked" class="form-check-input" /> 
-                <ValidationMessage For="() => Swipe.IsLiked" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="swipedate" class="form-label">SwipeDate:</label> 
-                <InputDate id="swipedate" @bind-Value="Swipe.SwipeDate" class="form-control" /> 
-                <ValidationMessage For="() => Swipe.SwipeDate" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
-        </EditForm>
-    </div>
-</div>
 
-<div>
-    <a href="/swipes">Back to List</a>
-</div>
+@if (showMatchPopup)
+{
+    <div class="alert alert-success text-center" role="alert">
+        🎉 It's a Match! You and @matchedUserName liked each other!
+        <button class="btn btn-link" @onclick="() => showMatchPopup = false">Close</button>
+    </div>
+}
+
+@if (CurrentProfile is null)
+{
+    <p><em>No more candidates available</em></p>
+}
+else
+{
+    <EditForm method="post" Model="Swipe" OnValidSubmit="AddSwipe" FormName="create" Enhance>
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+
+        <div class="card text-center" style="max-width:400px;">
+            @if (!string.IsNullOrEmpty(CurrentProfile.PhotoURL))
+            {
+                <img src="@CurrentProfile.PhotoURL" class="card-img-top"
+                     style="max-height:300px;object-fit:cover;" />
+            }
+            <div class="card-body">
+                <h3>@CurrentProfile.FirstName, @CurrentProfile.Age</h3>
+
+                <p><strong>Bio:</strong> @CurrentProfile.Bio</p>
+                <p><strong>Interests:</strong> @CurrentProfile.Interest</p>
+                <p><strong>Region:</strong> @CurrentProfile.RegionName</p>
+
+                <!-- Hidden bound fields -->
+                <InputText type="hidden" @bind-Value="Swipe.UserId_From" />
+                <InputText type="hidden" @bind-Value="Swipe.UserId_To" />
+
+                <!-- IsLiked checkbox -->
+                <div class="form-check mb-3 d-flex align-items-center">
+                    <InputCheckbox id="isliked" @bind-Value="Swipe.IsLiked" class="form-check-input me-2" />
+                    <label for="isliked" class="form-check-label">Like this user</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Confirm Swipe</button>
+            </div>
+        </div>
+    </EditForm>
+}
 
 @code {
     [SupplyParameterFromForm]
     private Swipe Swipe { get; set; } = new();
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private Profile? CurrentProfile;
+    private string? currentUserId;
+    private Preference? CurrentPreference;
+    private bool showMatchPopup = false; 
+    private string? matchedUserName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        currentUserId = await UserManager.GetUserIdAsync(user);
+
+        Swipe.UserId_From = currentUserId!;
+
+        using var context = DbFactory.CreateDbContext();
+
+        // Load preferences for current user (assuming stored in DB)
+        CurrentPreference = await context.Preference
+            .Where(p => p.UserId == currentUserId)
+            .FirstOrDefaultAsync();
+
+        // First candidate with age + gender filters
+        CurrentProfile = await BuildCandidateQuery(context)
+            .OrderBy(p => Guid.NewGuid())
+            .FirstOrDefaultAsync();
+
+        if (CurrentProfile is not null)
+        {
+            Swipe.UserId_To = CurrentProfile.UserId;
+        }
+
+        Swipe.SwipeDate = DateTime.Now;
+    }
+
     private async Task AddSwipe()
     {
+        Swipe.SwipeDate = DateTime.Now;
+
         using var context = DbFactory.CreateDbContext();
         context.Swipe.Add(Swipe);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/swipes");
+
+        // Check for mutual like
+        if (Swipe.IsLiked)
+        {
+            var mutual = await context.Swipe
+                .AnyAsync(s =>
+                    s.UserId_From == Swipe.UserId_To &&
+                    s.UserId_To == Swipe.UserId_From &&
+                    s.IsLiked == true);
+
+            if (mutual)
+            {
+                var match = new Match
+                {
+                    UserId_One = Swipe.UserId_From,
+                    UserId_Two = Swipe.UserId_To,
+                    Active = true,
+                    MatchDate = DateTime.Now,
+                };
+
+                context.Match.Add(match);
+                await context.SaveChangesAsync();
+
+                // Its a match popup msg
+                matchedUserName = CurrentProfile?.FirstName; 
+                showMatchPopup = true;
+            }
+        }
+
+        // Next candidate with same age + gender filters
+        CurrentProfile = await BuildCandidateQuery(context)
+            .OrderBy(p => Guid.NewGuid())
+            .FirstOrDefaultAsync();
+
+        if (CurrentProfile is not null)
+        {
+            Swipe.UserId_To = CurrentProfile.UserId;
+            Swipe.IsLiked = false;
+            Swipe.SwipeDate = DateTime.Now;
+        }
+        else
+        {
+            Swipe.IsLiked = false;
+        }
+
+        StateHasChanged();
     }
-}
+
+
+    private IQueryable<Profile> BuildCandidateQuery(DatingAppContext context)
+    {
+        // Collect all the UserIds you have already swiped on
+        var swipedUserIds = context.Swipe
+            .Where(s => s.UserId_From == currentUserId)
+            .Select(s => s.UserId_To);
+
+        // Base query: exclude yourself and anyone already swiped
+        var query = context.Profile
+            .Where(p => p.UserId != currentUserId)
+            .Where(p => !swipedUserIds.Contains(p.UserId));
+
+        // Apply age range if preferences exist
+        if (CurrentPreference is not null)
+        {
+            var minAge = CurrentPreference.MinAge > 0 ? CurrentPreference.MinAge : 18;
+            var maxAge = CurrentPreference.MaxAge > 0 ? CurrentPreference.MaxAge : 99;
+
+            query = query.Where(p => p.Age >= minAge && p.Age <= maxAge);
+
+            // Apply gender if set
+            if (!string.IsNullOrWhiteSpace(CurrentPreference.PreferredGender))
+            {
+                query = query.Where(p => p.Gender == CurrentPreference.PreferredGender);
+            }
+        }
+
+        return query;
+    }
+
+    }
+
+

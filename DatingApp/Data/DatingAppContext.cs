@@ -12,7 +12,6 @@ namespace DatingApp.Data
         {
         }
         public DbSet<DatingApp.Domain.Block> Block { get; set; } = default!;
-        public DbSet<DatingApp.Domain.MatchCriteria> MatchCriteria { get; set; } = default!;
         public DbSet<DatingApp.Domain.Match> Match { get; set; } = default!;
         public DbSet<DatingApp.Domain.Message> Message { get; set; } = default!;
         public DbSet<DatingApp.Domain.Preference> Preference { get; set; } = default!;

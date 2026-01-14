@@ -1,40 +1,55 @@
 ﻿@page "/matches"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
-@implements IAsyncDisposable
-@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject IDbContextFactory<DatingAppContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Index</PageTitle>
+@attribute [Authorize(Roles = "Administrator, User")]
 
-<h1>Index</h1>
+<PageTitle>Matches</PageTitle>
 
-<p>
-    <a href="matches/create">Create New</a>
-</p>
+<h1>Matches</h1>
 
-<QuickGrid Class="table" Items="context.Match">
-    <PropertyColumn Property="match => match.MatchDate" />
-    <PropertyColumn Property="match => match.Active" />
-    <PropertyColumn Property="match => match.UserId_One" />
-    <PropertyColumn Property="match => match.UserId_Two" />
-    <PropertyColumn Property="match => match.MatchedBy" />
-    <PropertyColumn Property="match => match.MatchedOnCriteria" />
+@if (context is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <QuickGrid Class="table" Items="context.Match">
+        <PropertyColumn Property="m => m.MatchDate" Title="Matched On" />
+        <PropertyColumn Property="m => m.Active" Title="Status" />
+        <PropertyColumn Property="m => m.UserId_One" Title="User One" />
+        <PropertyColumn Property="m => m.UserId_Two" Title="User Two" />
 
-    <TemplateColumn Context="match">
-        <a href="@($"matches/edit?matchid={match.MatchId}")">Edit</a> |
-        <a href="@($"matches/details?matchid={match.MatchId}")">Details</a> |
-        <a href="@($"matches/delete?matchid={match.MatchId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+        @if (!UserIsAdmin)
+        {
+            <TemplateColumn Context="match">
+                <a href="@($"matches/edit?matchid={match.MatchId}")">Unmatch</a> |
+                <a href="@($"matches/details?matchid={match.MatchId}")">Details</a>
+            </TemplateColumn>
+        }
+    </QuickGrid>
+}
 
 @code {
     private DatingAppContext context = default!;
+    private bool UserIsAdmin;
+    private string? currentUserId;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UserIsAdmin = user.IsInRole("Administrator");
+
+        currentUserId = user.FindFirst("sub")?.Value
+                     ?? user.FindFirst("nameidentifier")?.Value;
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

@@ -8,8 +8,6 @@
 @inject UserManager<DatingAppUser> UserManager
 @inject NavigationManager NavigationManager
 @inject SignInManager<DatingAppUser> SignInManager
-@inject NavigationManager NavigationManager
-
 
 <div class="top-bar d-flex justify-content-between align-items-center p-2 bg-light shadow-sm">
     <div class="d-flex align-items-center">
@@ -29,13 +27,13 @@
         <span class="fw-bold">@UserProfile?.FirstName</span>
     </div>
 
-        <!-- Logout form -->
+    <!-- Logout button -->
     <div class="nav-item px-3">
-        <button class="btn btn-outline-danger btn-sm" @onclick="Logout">
-            <span class="bi bi-box-arrow-right" aria-hidden="true"></span> Logout
-        </button>
+        <div class="action-row">
+            <a class="btn btn-primary" href="/">Logout</a>
+        </div>
     </div>
-    </div>
+</div>
 
 <div class="main-container">
     <h1 class="welcome-title">Welcome to JRomance</h1>
@@ -94,8 +92,8 @@
         <section class="section-card">
             <h2>Start Matching</h2>
             <div class="action-row">
-                <a class="btn btn-danger" href="/swipe">Start Swiping</a>
-                <a class="btn btn-primary" href="/matches/create">Your Matches</a>
+                <a class="btn btn-danger" href="/swipes/create">Start Swiping</a>
+                <a class="btn btn-primary" href="/matches">Your Matches</a>
                 <a class="btn btn-secondary" href="/messages/create">Messages</a>
             </div>
         </section>
@@ -112,6 +110,7 @@
             <div class="action-row">
                 <a class="btn btn-primary" href="/profiles">Manage Profiles</a>
                 <a class="btn btn-primary" href="/preferences">Manage Preferences</a>
+                <a class="btn btn-primary" href="/matches">Manage Matches</a>
             </div>
         </section>
 
@@ -165,7 +164,6 @@
 @code {
     private Profile? UserProfile;
     private Preference? UserPreference;
-    private string? currentUrl;
 
     protected override async Task OnInitializedAsync()
     {
@@ -174,7 +172,6 @@
 
         if (user == null)
         {
-            // Not logged in or invalid user
             return;
         }
 
@@ -187,18 +184,5 @@
             UserProfile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == userId);
             UserPreference = await context.Preference.FirstOrDefaultAsync(p => p.UserId == userId);
         }
-
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
     }
-
-    private async Task Logout()
-    {
-        // End the current Identity session
-        await SignInManager.SignOutAsync();
-
-        // Redirect to landing page ("/")
-        NavigationManager.NavigateTo("/", true);
-    }
-
-
 }

@@ -1,4 +1,5 @@
 ﻿@page "/matches/create"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
@@ -34,16 +35,6 @@
                 <label for="userid_two" class="form-label">UserId_Two:</label> 
                 <InputText id="userid_two" @bind-Value="Match.UserId_Two" class="form-control" /> 
                 <ValidationMessage For="() => Match.UserId_Two" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="matchedby" class="form-label">MatchedBy:</label> 
-                <InputText id="matchedby" @bind-Value="Match.MatchedBy" class="form-control" /> 
-                <ValidationMessage For="() => Match.MatchedBy" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="matchedoncriteria" class="form-label">MatchedOnCriteria:</label> 
-                <InputText id="matchedoncriteria" @bind-Value="Match.MatchedOnCriteria" class="form-control" /> 
-                <ValidationMessage For="() => Match.MatchedOnCriteria" class="text-danger" /> 
             </div>        
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
