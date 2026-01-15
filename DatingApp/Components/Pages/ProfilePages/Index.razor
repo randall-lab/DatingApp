@@ -21,14 +21,21 @@
     <PropertyColumn Property="profile => profile.Gender" />
     <PropertyColumn Property="profile => profile.Bio" />
     <PropertyColumn Property="profile => profile.Interest" />
-    <PropertyColumn Property="profile => profile.PhotoURL" />
     <PropertyColumn Property="profile => profile.RegionName" />
-    <PropertyColumn Property="profile => profile.IsVerified" />
     <PropertyColumn Property="profile => profile.LastActiveDate" />
+    <TemplateColumn Title="Photo" Context="profile">
+        @if (!string.IsNullOrEmpty(profile.PhotoURL))
+        {
+            <img src="@profile.PhotoURL" alt="Profile Photo"
+                 style="width:80px; height:80px; border-radius:80%; object-fit:cover;" />
+        }
+        else
+        {
+            <span>No photo</span>
+        }
+    </TemplateColumn>
 
     <TemplateColumn Context="profile">
-        <a href="@($"profiles/edit?Id={profile.ProfileId}")">Edit</a> |
-        <a href="@($"profiles/details?Id={profile.ProfileId}")">Details</a> |
         <a href="@($"profiles/delete?Id={profile.ProfileId}")">Delete</a>
     </TemplateColumn>
 

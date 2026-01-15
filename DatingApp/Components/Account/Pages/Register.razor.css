@@ -1,0 +1,110 @@
+﻿/* --- 1. GLOBAL PAGE BACKGROUND --- */
+:host {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important; /* Soft light grey-blue page background */
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+}
+
+/* --- 2. THE MAIN REGISTER CARD --- */
+.row {
+    background-color: #f0f9ff !important; /* Very light blue card background */
+    width: 450px !important; /* Slightly wider to accommodate registration fields */
+    padding: 40px !important;
+    border-radius: 16px !important;
+    border: 1px solid #e0f2fe !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 auto !important;
+}
+
+    /* --- 3. THE BRAND TITLE --- */
+    .row::before {
+        content: "JRomance";
+        display: block;
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #111b27; /* Dark navy title matching the logo style */
+        margin-bottom: 10px;
+        letter-spacing: -1.5px;
+    }
+
+/* --- 4. THE SUBTITLE TEXT --- */
+h2 {
+    display: block !important;
+    color: #475569 !important; /* Slate grey/black for "Create a new account" */
+    font-size: 0.9rem !important;
+    text-align: center !important;
+    font-weight: 500 !important;
+    margin-bottom: 25px !important;
+}
+
+/* --- 5. FORM INPUTS --- */
+.form-control {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    color: #1e293b !important;
+    height: 48px !important;
+    margin-bottom: 16px !important;
+    padding: 0 16px !important;
+}
+
+    .form-control:focus {
+        border-color: #00e5ff !important; /* Cyan focus state */
+        box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1) !important;
+        outline: none;
+    }
+
+/* --- 6. REGISTER BUTTON (CYAN/BLUE) --- */
+.btn-primary {
+    /* Vibrant Cyan matching the reference Register button */
+    background-color: #00e5ff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #111b27 !important; /* Dark navy text for high contrast on cyan */
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    padding: 14px !important;
+    text-transform: uppercase;
+    width: 100% !important;
+    margin-top: 10px !important;
+}
+
+    .btn-primary:hover {
+        background-color: #00d4ec !important;
+        transform: translateY(-1px);
+    }
+
+/* --- 7. SECONDARY LINKS (BLACK/GREY) --- */
+/* For links like "Already have an account? Login" */
+a, .row p {
+    color: #475569 !important; /* Professional Slate Grey */
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+    a:hover {
+        color: #111b27 !important;
+        text-decoration: underline;
+    }
+
+/* --- 8. CLEANUP --- */
+/* Hide the default H1 and extra Bootstrap columns */
+h1, hr, .col-md-6, .col-md-offset-2 {
+    display: none !important;
+}
+
+.col-md-4 {
+    width: 100% !important;
+    flex: none !important;
+}

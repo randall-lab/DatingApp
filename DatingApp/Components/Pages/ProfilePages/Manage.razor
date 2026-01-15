@@ -1,0 +1,36 @@
+﻿@page "/profiles/manage"
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
+
+<h3>Redirecting to your profile...</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            Nav.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+
+        var profile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == userId);
+
+        if (profile is null)
+        {
+            Nav.NavigateTo("/profiles/create", forceLoad: true);
+        }
+        else
+        {
+            Nav.NavigateTo($"/profiles/details?profileid={profile.ProfileId}", forceLoad: true);
+        }
+    }
+}

@@ -53,12 +53,25 @@
 </EditForm>
 
 @code {
-    private Preference Preference { get; set; } = new Preference
+
+    [SupplyParameterFromForm]
+    private Preference Preference { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        MinAge = 18,
-        MaxAge = 35,
-        LocationRadius = 10
-    };
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            NavigationManager.NavigateTo("/Account/Login", true);
+            return;
+        }
+
+        // Auto-fill UserId from Identity
+        var identityUser = await UserManager.GetUserAsync(user);
+        Preference.UserId = await UserManager.GetUserIdAsync(identityUser);
+    }
 
     private async Task CreatePreference()
     {

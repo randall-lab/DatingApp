@@ -1,0 +1,124 @@
+﻿/* --- 1. GLOBAL PAGE BACKGROUND --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important; /* Soft grey-blue */
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- 2. TOP NAVIGATION BAR --- */
+.top-bar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 24px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+}
+
+    .top-bar .fw-bold {
+        color: #111b27; /* Dark navy */
+    }
+
+/* --- 3. PAGE CONTENT CONTAINER --- */
+.main-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* --- 4. BRANDED TITLES --- */
+.welcome-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #111b27; /* Signature Dark Navy */
+    text-align: center;
+    margin-bottom: 5px;
+    letter-spacing: -1.5px;
+}
+
+.welcome-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #475569; /* Slate grey */
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+/* --- 5. SECTION CARDS --- */
+.section-card {
+    background-color: #f0f9ff !important; /* Light blue card background */
+    padding: 30px;
+    border-radius: 20px; /* Matching the login card roundness */
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+    .section-card h2 {
+        color: #111b27;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .section-card h3 {
+        color: #111b27;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+
+/* --- 6. DATA LISTS --- */
+ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+    ul li {
+        color: #475569;
+        font-size: 1rem;
+        padding: 5px 0;
+    }
+
+/* --- 7. BRANDED BUTTONS --- */
+/* Primary/Danger Action: Vibrant Cyan */
+.btn-primary, .btn-danger {
+    background-color: #00e5ff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #111b27 !important; /* Navy text for readability */
+    font-weight: 800 !important;
+    padding: 10px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+/* Secondary/Outline: Dark Navy Border */
+.btn-outline-primary, .btn-secondary, .btn-outline-secondary {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 700 !important;
+    padding: 10px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-row {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}

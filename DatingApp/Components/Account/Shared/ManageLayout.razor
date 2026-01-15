@@ -1,17 +1,33 @@
 ﻿@inherits LayoutComponentBase
 @layout AccountLayout
+@inject NavigationManager NavigationManager
 
-<h1>Manage your account</h1>
-
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
+<div class="page">
+    @if (ShowSidebar())
+    {
+        <div class="sidebar">
             <ManageNavMenu />
         </div>
-        <div class="col-md-9">
+    }
+
+    <main>
+        <article class="content px-4">
             @Body
-        </div>
-    </div>
+        </article>
+    </main>
 </div>
+
+@code {
+    private bool ShowSidebar()
+    {
+        var url = NavigationManager.Uri.ToLower();
+
+        // ✅ Only show sidebar on manage pages, hide on AccessDenied
+        return url.Contains("/account/manage") ||
+               url.Contains("/account/manage/email") ||
+               url.Contains("/account/manage/changepassword") ||
+               url.Contains("/account/manage/externalLogins") ||
+               url.Contains("/account/manage/twofactorauthentication") ||
+               url.Contains("/account/manage/personaldata");
+    }
+}

@@ -1,0 +1,99 @@
+﻿/* --- 1. MAIN LANDING CONTAINER --- */
+/* This forces the light slate-grey background to cover the entire screen,
+   matching the pleasing color used on the login page. */
+.landing-container {
+    background-color: #e2e8f0; /* Pleasing light slate-blue gray */
+    /* Full-screen coverage to hide default headers/sidebars */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 9999;
+    /* Centering everything in the middle of the screen */
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center; /* Centers vertically */
+    align-items: center; /* Centers horizontally */
+    text-align: center;
+    /* Page Fade-In Animation */
+    animation: fadeInPage 1.2s ease-out forwards;
+}
+
+/* --- 2. TITLE - "Welcome to JRomance" --- */
+.title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #0f172a; /* Dark navy to match the login card color */
+    letter-spacing: -1px;
+}
+
+/* --- 3. SUBTITLE --- */
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    color: #475569; /* Muted slate gray for a soft, pleasing look */
+    max-width: 600px;
+    line-height: 1.6;
+    padding: 0 20px;
+}
+
+/* --- 4. BUTTON ROW --- */
+.button-row {
+    display: flex;
+    gap: 20px; /* Space between the two buttons */
+}
+
+    /* General Button Styling */
+    .button-row a {
+        padding: 14px 35px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: 8px; /* Slightly rounded corners matching the login style */
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+/* Register Button: The "Action" button in Solid Cyan */
+.btn-primary {
+    background-color: #00e5ff !important; /* Cyan theme color */
+    color: #0f172a !important; /* Dark text for high contrast */
+    border: none !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 229, 255, 0.3);
+}
+
+/* Login Button: The "Secondary" button in Dark Navy */
+.btn-secondary {
+    background-color: #0f172a !important; /* Dark navy to match login card */
+    color: #ffffff !important; /* White text */
+    border: none !important;
+    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+}
+
+/* --- 5. HOVER EFFECTS --- */
+.button-row a:hover {
+    transform: translateY(-3px); /* Lifts up slightly when hovered */
+    filter: brightness(1.1); /* Makes colors pop slightly more */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 6. ANIMATIONS --- */
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

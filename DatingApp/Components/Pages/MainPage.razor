@@ -85,17 +85,18 @@
                         <a class="btn btn-outline-primary" href="@($"/preferences/edit?id={UserPreference.PreferenceId}")">Edit Preferences</a>
                         <a class="btn btn-outline-primary" href="@($"/preferences/details?id={UserPreference.PreferenceId}")">View Preferences</a>
                     </div>
+
+                    <!-- ✅ Only show Start Matching if preferences exist -->
+                    <section class="section-card">
+                        <h2>Start Matching</h2>
+                        <div class="action-row">
+                            <a class="btn btn-danger" href="/swipes/create">Start Swiping</a>
+                            <a class="btn btn-primary" href="/matches">Your Matches</a>
+                            <a class="btn btn-secondary" href="/messages/create">Messages</a>
+                        </div>
+                    </section>
                 }
             }
-        </section>
-
-        <section class="section-card">
-            <h2>Start Matching</h2>
-            <div class="action-row">
-                <a class="btn btn-danger" href="/swipes/create">Start Swiping</a>
-                <a class="btn btn-primary" href="/matches">Your Matches</a>
-                <a class="btn btn-secondary" href="/messages/create">Messages</a>
-            </div>
         </section>
     </AuthorizeView>
 
