@@ -14,21 +14,24 @@
 
 <h1>Index</h1>
 
-<p>
-    <a href="preferences/create">Create New</a>
-</p>
-
 <QuickGrid Class="table" Items="context.Preference">
-    <PropertyColumn Property="preference => preference.UserId" />
+
+    <TemplateColumn Title="User ID" Context="profile">
+        <span style="font-size:10px;">
+            @profile.UserId
+        </span>
+    </TemplateColumn>
+
+    <PropertyColumn Property="preference => preference.UserFullName" Title="Name" />
     <PropertyColumn Property="preference => preference.PreferredGender" />
     <PropertyColumn Property="preference => preference.MinAge" />
     <PropertyColumn Property="preference => preference.MaxAge" />
     <PropertyColumn Property="preference => preference.LocationRadius" />
 
     <TemplateColumn Context="preference">
-        <a href="@($"preferences/edit?preferenceid={preference.PreferenceId}")">Edit</a> |
-        <a href="@($"preferences/details?preferenceid={preference.PreferenceId}")">Details</a> |
-        <a href="@($"preferences/delete?preferenceid={preference.PreferenceId}")">Delete</a>
+        <a href="@($"preferences/edit?id={preference.PreferenceId}")">Edit</a> |
+        <a href="@($"preferences/delete?id={preference.PreferenceId}")">Delete</a>
+
     </TemplateColumn>
 </QuickGrid>
 
@@ -38,6 +41,14 @@
     protected override void OnInitialized()
     {
         context = DbFactory.CreateDbContext();
+
+        foreach (var pref in context.Preference) 
+        { 
+            pref.UserFullName = context.Profile
+                .Where(p => p.UserId == pref.UserId)
+                .Select(p => p.FirstName + " " + p.LastName)
+                .FirstOrDefault(); 
+        }
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

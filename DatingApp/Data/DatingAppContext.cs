@@ -27,6 +27,15 @@ namespace DatingApp.Data
             builder.ApplyConfiguration(new RoleSeed());
             builder.ApplyConfiguration(new UserSeed());
             builder.ApplyConfiguration(new UserRoleSeed());
+
+            builder.Entity<Match>()
+                .Ignore(m => m.UserOneName)
+                .Ignore(m => m.UserTwoName)
+                .Ignore(m => m.OtherUserName)
+                .Ignore(m => m.OtherUserPhoto);
+
+            builder.Entity<Preference>()
+                .Ignore(p => p.UserFullName);
         }
     }
 }

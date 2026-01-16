@@ -18,9 +18,14 @@
 
 @if (showMatchPopup)
 {
-    <div class="alert alert-success text-center" role="alert">
-        🎉 It's a Match! You and @matchedUserName liked each other!
-        <button class="btn btn-link" @onclick="() => showMatchPopup = false">Close</button>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast show align-items-center text-bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    🎉 It's a Match! You and @matchedUserName liked each other!
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -30,7 +35,7 @@
 }
 else
 {
-    <EditForm method="post" Model="Swipe" OnValidSubmit="AddSwipe" FormName="create" Enhance>
+    <EditForm method="post" Model="Swipe" OnValidSubmit="AddSwipe" FormName="create">
         <DataAnnotationsValidator />
         <ValidationSummary class="text-danger" role="alert" />
 
@@ -187,6 +192,17 @@ else
         return query;
     }
 
+    private async Task ShowMatchPopup(string? name)
+    {
+        matchedUserName = name;
+        showMatchPopup = true;
+        StateHasChanged();
+
+        await Task.Delay(3000); // 3 seconds
+        showMatchPopup = false;
+        StateHasChanged();
     }
+
+}
 
 

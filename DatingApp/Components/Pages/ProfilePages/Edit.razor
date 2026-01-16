@@ -5,14 +5,13 @@
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
 
-@attribute [Authorize(Roles = "User")]
+@attribute [Authorize(Roles = "Administrator,User")]
 
 
 <PageTitle>Edit</PageTitle>
 
-<h1>Edit</h1>
+<h1>Edit Profile</h1>
 
-<h2>Profile</h2>
 <hr />
 @if (Profile is null)
 {
@@ -51,7 +50,7 @@ else
                 <div class="mb-3">
                     <label class="form-label">Gender:</label>
                     <InputSelect @bind-Value="Profile.Gender" class="form-control">
-                        <option value="">Select</option>
+                        <option value="">-- Select Gender --</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Non-Binary">Non-Binary</option>
@@ -85,7 +84,7 @@ else
                 <div class="mb-3">
                     <label class="form-label">Region:</label>
                     <InputSelect @bind-Value="Profile.RegionName" class="form-control">
-                        <option value="">Select</option>
+                        <option value="">-- Select Region --</option>
                         <option value="Central">Central</option>
                         <option value="East">East</option>
                         <option value="North">North</option>
@@ -123,8 +122,8 @@ else
     {
         using var context = DbFactory.CreateDbContext();
 
-        // ✅ FIXED: Use Attach pattern like lab practice
-        Profile!.LastActiveDate = DateTime.UtcNow;
+        // Use Attach pattern like lab practice
+        Profile!.LastActiveDate = DateTime.Now;
         context.Attach(Profile).State = EntityState.Modified;
 
         try
@@ -143,7 +142,7 @@ else
             }
         }
 
-        // ✅ FIXED: Redirect consistent with query string style
+        // Redirect consistent with query string style
         NavigationManager.NavigateTo($"/profiles/details?id={Profile.ProfileId}");
     }
 

@@ -13,44 +13,116 @@
 
 <h1>Matches</h1>
 
-@if (context is null)
+@if (matches == null || !matches.Any())
 {
-    <p><em>Loading...</em></p>
+    <p>No matches found.</p>
 }
+
 else
 {
-    <QuickGrid Class="table" Items="context.Match">
+    <QuickGrid TGridItem="Match" Class="table" Items="matches">
         <PropertyColumn Property="m => m.MatchDate" Title="Matched On" />
         <PropertyColumn Property="m => m.Active" Title="Status" />
-        <PropertyColumn Property="m => m.UserId_One" Title="User One" />
-        <PropertyColumn Property="m => m.UserId_Two" Title="User Two" />
 
-        @if (!UserIsAdmin)
+        @if (UserIsAdmin)
         {
-            <TemplateColumn Context="match">
-                <a href="@($"matches/edit?matchid={match.MatchId}")">Unmatch</a> |
-                <a href="@($"matches/details?matchid={match.MatchId}")">Details</a>
+            <TemplateColumn Title="User One ID" Context="m">
+                <span style="font-size:10px;">
+                    @m.UserId_One
+                </span>
             </TemplateColumn>
+
+            <PropertyColumn Property="m => m.UserOneName" Title="User One Name" />
+
+            <TemplateColumn Title="User Two ID" Context="m">
+                <span style="font-size:10px;">
+                    @m.UserId_Two
+                </span>
+            </TemplateColumn>
+
+            <PropertyColumn Property="m => m.UserTwoName" Title="User Two Name" />
         }
+
+        else
+        {
+            <PropertyColumn Property="m => m.OtherUserName" Title="Matched With" />
+            <TemplateColumn Context="match">
+                <img src="@match.OtherUserPhoto" alt="Profile Photo"
+                     style="width:80px; height:80px; border-radius:80%; object-fit:cover;" />
+            </TemplateColumn>
+
+        }
+
+        <TemplateColumn Context="match">
+            <a href="@($"matches/edit?matchid={match.MatchId}")">Unmatch</a>
+        </TemplateColumn>
+
     </QuickGrid>
+
 }
 
 @code {
-    private DatingAppContext context = default!;
     private bool UserIsAdmin;
     private string? currentUserId;
+    private IQueryable<Match> matches = Enumerable.Empty<Match>().AsQueryable();
+    // private bool showActiveOnly = true;
 
     protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
+        // Default: load active matches for users, all for admins
+        await LoadMatches(true);
+    }
 
+    private async Task LoadMatches(bool activeOnly)
+    {
+        using var db = DbFactory.CreateDbContext();
+
+        // Get current user + role
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         UserIsAdmin = user.IsInRole("Administrator");
 
         currentUserId = user.FindFirst("sub")?.Value
-                     ?? user.FindFirst("nameidentifier")?.Value;
-    }
+                     ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+        IQueryable<Match> query;
+
+        if (UserIsAdmin)
+        {
+            // Admins see all matches
+            query = db.Match;
+        }
+        else
+        {
+            // Users see only their own matches, filtered by activeOnly
+            query = db.Match.Where(m =>
+                (m.UserId_One == currentUserId || m.UserId_Two == currentUserId)
+                && m.Active == activeOnly);
+        }
+
+        var list = await query.ToListAsync();
+
+        // Populate names/photos for display
+        foreach (var m in list)
+        {
+            m.UserOneName = db.Profile
+                .Where(p => p.UserId == m.UserId_One)
+                .Select(p => p.FirstName + " " + p.LastName)
+                .FirstOrDefault();
+
+            m.UserTwoName = db.Profile
+                .Where(p => p.UserId == m.UserId_Two)
+                .Select(p => p.FirstName + " " + p.LastName)
+                .FirstOrDefault();
+
+            string otherUserId = m.UserId_One == currentUserId ? m.UserId_Two : m.UserId_One;
+            var otherProfile = db.Profile.FirstOrDefault(p => p.UserId == otherUserId);
+
+            m.OtherUserName = otherProfile?.FirstName + " " + otherProfile?.LastName;
+            m.OtherUserPhoto = otherProfile?.PhotoURL;
+        }
+
+        matches = list.AsQueryable();
+    }
 }
+

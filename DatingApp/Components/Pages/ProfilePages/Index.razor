@@ -14,7 +14,13 @@
 <h1>Index</h1>
 
 <QuickGrid Class="table" Items="context.Profile">
-    <PropertyColumn Property="profile => profile.UserId" />
+
+    <TemplateColumn Title="User ID" Context="profile">
+        <span style="font-size:10px;">
+            @profile.UserId
+        </span>
+    </TemplateColumn>
+
     <PropertyColumn Property="profile => profile.FirstName" />
     <PropertyColumn Property="profile => profile.LastName" />
     <PropertyColumn Property="profile => profile.Age" />
@@ -22,7 +28,11 @@
     <PropertyColumn Property="profile => profile.Bio" />
     <PropertyColumn Property="profile => profile.Interest" />
     <PropertyColumn Property="profile => profile.RegionName" />
-    <PropertyColumn Property="profile => profile.LastActiveDate" />
+    <TemplateColumn Title="Last Updated Date" Context="profile">
+        <span style="font-size:15px;">
+            @profile.LastActiveDate
+        </span>
+    </TemplateColumn>
     <TemplateColumn Title="Photo" Context="profile">
         @if (!string.IsNullOrEmpty(profile.PhotoURL))
         {
@@ -36,7 +46,8 @@
     </TemplateColumn>
 
     <TemplateColumn Context="profile">
-        <a href="@($"profiles/delete?Id={profile.ProfileId}")">Delete</a>
+        <a href="@($"profiles/edit?id={profile.ProfileId}")">Edit</a>       
+        <a href="@($"profiles/delete?id={profile.ProfileId}")">Delete</a>
     </TemplateColumn>
 
 </QuickGrid>

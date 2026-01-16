@@ -1,0 +1,84 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND & FONTS */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important; /* Soft grey-blue */
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. ALIGNMENT - Matches sidebar offset from other pages */
+h1, p, .status-message-container {
+    margin-left: 60px; /* Aligns with sidebar */
+    margin-right: 40px;
+}
+
+/* 3. PAGE TITLE */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+    text-transform: uppercase;
+}
+
+/* 4. CONTENT CARD - Matches the light blue "Section Card" style */
+p {
+    background-color: #f0f9ff; /* Light blue */
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    max-width: 700px; /* Standard card width */
+    line-height: 1.6;
+    color: #475569;
+    font-size: 1.05rem;
+}
+
+/* 5. HYPERLINKS - Styled as brand-colored buttons or clean links */
+a {
+    color: #00e5ff !important; /* Brand Cyan */
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+    a:hover {
+        color: #00b8cc !important;
+        text-decoration: underline;
+    }
+
+    /* 6. CONFIRMATION BUTTON LINK - Making the main action stand out */
+    a[href*="ConfirmEmail"] {
+        display: inline-block;
+        background-color: #00e5ff !important; /* Vibrant Cyan */
+        color: #111b27 !important;
+        padding: 12px 24px;
+        border-radius: 12px;
+        margin-top: 15px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+    }
+
+        a[href*="ConfirmEmail"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 229, 255, 0.3);
+            text-decoration: none;
+        }
+
+/* 7. RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+    h1, p {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}

@@ -4,8 +4,10 @@
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 
-@attribute [Authorize(Roles = "User")]
+
+@attribute [Authorize(Roles = "Administrator, User")]
 
 <PageTitle>Edit Match</PageTitle>
 
@@ -20,11 +22,10 @@ else
 {
     <div class="row">
         <div class="col-md-6">
-            <EditForm Model="Match" OnValidSubmit="UpdateMatch">
+            <EditForm Model="Match" OnValidSubmit="UpdateMatch" FormName="editMatch">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
-                <!-- Hidden ID -->
                 <input type="hidden" name="Match.MatchId" value="@Match.MatchId" />
 
                 <!-- Read-only fields -->
@@ -33,32 +34,49 @@ else
                     <p class="form-control-plaintext">@Match.MatchDate.ToShortDateString()</p>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">User:</label>
-                    <p class="form-control-plaintext">@Match.UserId_One</p>
-                </div>
+                @if (UserIsAdmin)
+                {
+                    <div class="mb-3">
+                        <label class="form-label">User One:</label>
+                        <p class="form-control-plaintext">
+                            @Match.UserOneName (@Match.UserId_One)
+                        </p>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Partner:</label>
-                    <p class="form-control-plaintext">@Match.UserId_Two</p>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">User Two:</label>
+                        <p class="form-control-plaintext">
+                            @Match.UserTwoName (@Match.UserId_Two)
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Matched With:</label>
+                        <p class="form-control-plaintext">@Match.OtherUserName</p>
+                        @if (!string.IsNullOrEmpty(Match.OtherUserPhoto))
+                        {
+                            <img src="@Match.OtherUserPhoto" alt="Profile Photo"
+                                 style="width:80px; height:80px; border-radius:80%; object-fit:cover;" />
+                        }
+                    </div>
+                }
 
                 <!-- Editable field -->
                 <div class="mb-3">
-                    <label for="active" class="form-label">Active:</label>
+                    <label for="active" class="form-label">Status:</label>
                     <InputCheckbox id="active" @bind-Value="Match.Active" class="form-check-input" />
+                    <span class="ms-2">@(Match.Active ? "Matched" : "Unmatched")</span>
                     <ValidationMessage For="() => Match.Active" />
                 </div>
 
                 <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/matches" class="btn btn-secondary">Back to Matches</a>
             </EditForm>
         </div>
     </div>
 }
-
-<div>
-    <a href="/matches">Back to List</a>
-</div>
 
 @code {
     [SupplyParameterFromQuery]
@@ -66,6 +84,9 @@ else
 
     [SupplyParameterFromForm]
     private Match? Match { get; set; }
+
+    private bool UserIsAdmin;
+    private string? currentUserId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,21 +96,47 @@ else
         if (Match is null)
         {
             NavigationManager.NavigateTo("notfound");
+            return;
         }
+
+        // Get current user + role
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UserIsAdmin = user.IsInRole("Administrator");
+
+        currentUserId = user.FindFirst("sub")?.Value
+                     ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        // Populate names/photos
+        Match.UserOneName = context.Profile
+            .Where(p => p.UserId == Match.UserId_One)
+            .Select(p => p.FirstName + " " + p.LastName)
+            .FirstOrDefault();
+
+        Match.UserTwoName = context.Profile
+            .Where(p => p.UserId == Match.UserId_Two)
+            .Select(p => p.FirstName + " " + p.LastName)
+            .FirstOrDefault();
+
+        // Correct "other user" logic
+        var otherUserId = Match.UserId_One == currentUserId ? Match.UserId_Two : Match.UserId_One;
+        var otherProfile = context.Profile.FirstOrDefault(p => p.UserId == otherUserId);
+
+        Match.OtherUserName = otherProfile?.FirstName + " " + otherProfile?.LastName;
+        Match.OtherUserPhoto = otherProfile?.PhotoURL;
     }
 
     private async Task UpdateMatch()
     {
         using var context = DbFactory.CreateDbContext();
-
-        // Only update Active
         var existing = await context.Match.FirstOrDefaultAsync(m => m.MatchId == MatchId);
         if (existing is not null)
         {
+            // Save whatever the checkbox says
             existing.Active = Match!.Active;
             await context.SaveChangesAsync();
         }
-
         NavigationManager.NavigateTo("/matches");
     }
 }
+

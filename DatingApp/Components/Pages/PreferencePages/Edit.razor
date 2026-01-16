@@ -32,7 +32,7 @@ else
         <div class="mb-3">
             <label class="form-label">Preferred Gender</label>
             <InputSelect @bind-Value="Preference.PreferredGender" class="form-control">
-                <option value="">Select gender</option>
+                <option value="">-- Select Gender --</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Non-Binary">Non-Binary</option>
@@ -94,13 +94,13 @@ else
             return;
         }
 
-        // ✅ Copy editable fields
+        // Copy editable fields
         existing.PreferredGender = Preference.PreferredGender;
         existing.MinAge = Preference.MinAge;
         existing.MaxAge = Preference.MaxAge;
         existing.LocationRadius = Preference.LocationRadius;
 
-        // ✅ Ensure UserId is always set
+        // Ensure UserId is always set
         existing.UserId = userId;
 
         await context.SaveChangesAsync();

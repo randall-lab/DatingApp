@@ -10,21 +10,27 @@
 @inject SignInManager<DatingAppUser> SignInManager
 
 <div class="top-bar d-flex justify-content-between align-items-center p-2 bg-light shadow-sm">
-    <div class="d-flex align-items-center">
-        @if (!string.IsNullOrEmpty(UserProfile?.PhotoURL))
-        {
-            <img src="@UserProfile.PhotoURL"
-                 class="rounded-circle me-2"
-                 style="width:40px;height:40px;object-fit:cover;" />
-        }
-        else
-        {
-            <img src="/images/default-avatar.png"
-                 class="rounded-circle me-2"
-                 style="width:40px;height:40px;" />
-        }
+    <div class="d-flex align-items-center"> @* Dashboard code *@
+        <AuthorizeView Roles="User">
+            @if (!string.IsNullOrEmpty(UserProfile?.PhotoURL))
+            {
+                <img src="@UserProfile.PhotoURL"
+                     class="rounded-circle me-2"
+                     style="width:40px;height:40px;object-fit:cover;" />
+            }
+            else
+            {
+                <img src="/images/default-avatar.png"
+                     class="rounded-circle me-2"
+                     style="width:40px;height:40px;" />
+            }
 
-        <span class="fw-bold">@UserProfile?.FirstName</span>
+            <span class="fw-bold">@UserProfile?.FirstName</span>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Administrator">
+            <span class="fw-bold">Admin Dashboard</span>
+        </AuthorizeView>
     </div>
 
     <!-- Logout button -->
@@ -75,18 +81,12 @@
                 }
                 else
                 {
-                    <ul>
-                        <li>Preferred Gender(s): @UserPreference.PreferredGender</li>
-                        <li>Age Range: @UserPreference.MinAge – @UserPreference.MaxAge</li>
-                        <li>Search Radius: @UserPreference.LocationRadius km</li>
-                    </ul>
-
                     <div class="action-row">
                         <a class="btn btn-outline-primary" href="@($"/preferences/edit?id={UserPreference.PreferenceId}")">Edit Preferences</a>
                         <a class="btn btn-outline-primary" href="@($"/preferences/details?id={UserPreference.PreferenceId}")">View Preferences</a>
                     </div>
 
-                    <!-- ✅ Only show Start Matching if preferences exist -->
+                    <!-- Only show Start Matching if preferences exist -->
                     <section class="section-card">
                         <h2>Start Matching</h2>
                         <div class="action-row">

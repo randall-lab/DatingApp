@@ -1,0 +1,218 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENT POSITIONING - Accounting for sidebar */
+h1, hr {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+/* 3. PAGE TITLE STYLING */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+}
+
+/* 4. HR SEPARATOR */
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* 5. MATCH POPUP ALERT */
+.alert-success {
+    background-color: #d1fae5 !important;
+    border: 2px solid #00e5ff !important;
+    border-radius: 15px !important;
+    color: #111b27 !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 20px;
+    margin-left: 60px;
+    margin-right: 40px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+}
+
+    .alert-success .btn-link {
+        color: #111b27 !important;
+        font-weight: 700;
+        text-decoration: underline;
+        margin-left: 15px;
+    }
+
+/* 6. NO CANDIDATES MESSAGE */
+p em {
+    color: #64748b;
+    font-style: italic;
+    font-size: 1rem;
+    margin-left: 60px;
+}
+
+/* 7. FORM POSITIONING - CENTERED */
+form {
+    display: flex;
+    justify-content: center;
+    margin-left: 60px;
+    margin-right: 40px;
+    margin-top: 20px;
+}
+
+/* 8. PROFILE CARD - Light blue card CENTERED */
+.card {
+    background-color: #f0f9ff !important;
+    border-radius: 20px !important;
+    border: 1px solid #e0f2fe !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    max-width: 500px !important;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* 9. PROFILE IMAGE */
+.card-img-top {
+    width: 100%;
+    max-height: 350px !important;
+    object-fit: cover;
+    border-bottom: 3px solid #00e5ff;
+}
+
+/* 10. CARD BODY */
+.card-body {
+    padding: 30px !important;
+    background-color: #f0f9ff !important;
+}
+
+/* 11. PROFILE NAME */
+h3 {
+    color: #111b27;
+    font-weight: 800;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 12. PROFILE INFO */
+.card-body p {
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+    .card-body p strong {
+        color: #111b27;
+        font-weight: 700;
+        margin-right: 5px;
+    }
+
+/* 13. CHECKBOX CONTAINER */
+.form-check {
+    background-color: #e0f2fe;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    justify-content: center;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #111b27 !important;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .form-check-input:checked {
+        background-color: #00e5ff !important;
+        border-color: #00e5ff !important;
+    }
+
+.form-check-label {
+    color: #111b27;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+/* 14. CONFIRM SWIPE BUTTON */
+.btn-primary {
+    background-color: #00e5ff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 800 !important;
+    padding: 14px 32px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        opacity: 0.95;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* 15. VALIDATION MESSAGES */
+.text-danger {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* 16. HIDDEN INPUTS */
+input[type="hidden"] {
+    display: none;
+}
+
+/* 17. RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+    h1, hr, .alert-success, p em {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    form {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .card {
+        max-width: 100% !important;
+    }
+
+    .card-body {
+        padding: 20px !important;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    .alert-success {
+        font-size: 1rem;
+        padding: 15px;
+    }
+}

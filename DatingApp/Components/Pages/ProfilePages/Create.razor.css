@@ -1,0 +1,139 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important; /* Soft grey-blue matching MainPage */
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENT POSITIONING - Accounting for sidebar */
+h1, h2, hr, .row {
+    margin-left: 60px;
+    margin-right: 40px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* 3. PAGE TITLE STYLING - Matching MainPage brand */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 5px;
+    letter-spacing: -1.5px;
+}
+
+h2 {
+    color: #475569; /* Slate grey matching subtitle */
+    font-weight: 500;
+    font-size: 1.1rem;
+    opacity: 1;
+    margin-bottom: 30px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* 4. FORM CONTAINER - Light blue card matching MainPage sections */
+.col-md-4 {
+    background-color: #f0f9ff;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    max-width: 700px; /* Increased from 500px to fill more space */
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    justify-content: flex-start;
+    max-width: 1200px;
+}
+
+/* 5. FORM LABELS - Bold navy matching MainPage */
+.form-label {
+    font-weight: 700;
+    color: #111b27;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+/* 6. FORM INPUTS - Clean white with rounded corners */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    padding: 12px 16px;
+    background-color: #ffffff;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    width: 100%; /* Ensures inputs fill container */
+}
+
+    .form-control:focus {
+        border-color: #00e5ff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+    }
+
+/* 7. SAVE BUTTON - Vibrant cyan matching MainPage primary buttons */
+.btn-primary {
+    background-color: #00e5ff !important;
+    border: none !important;
+    color: #111b27 !important;
+    font-weight: 800 !important;
+    padding: 14px 32px !important;
+    border-radius: 12px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    margin-top: 25px;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        opacity: 0.95;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* 8. PHOTO PREVIEW - Cyan border matching brand */
+.img-thumbnail {
+    border: 4px solid #00e5ff !important;
+    border-radius: 15px !important;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    max-width: 100%;
+    height: auto;
+}
+
+/* 9. VALIDATION MESSAGES */
+.text-danger {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+/* 10. FORM GROUPS SPACING */
+.mb-3 {
+    margin-bottom: 20px !important;
+}
+
+/* 11. SELECT DROPDOWNS - Matching input styling */
+select.form-control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23111b27' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+    select.form-control:focus {
+        border-color: #00e5ff;
+    }

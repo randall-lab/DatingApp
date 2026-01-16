@@ -1,4 +1,6 @@
-﻿namespace DatingApp.Domain
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DatingApp.Domain
 {
     public class Preference
     {
@@ -11,5 +13,11 @@
         public int MinAge { get; set; } = 18;
         public int MaxAge { get; set; } = 35;
         public int LocationRadius { get; set; } = 10;
+
+        [NotMapped] 
+        public string? UserFullName { get; set; } // admin side to see full name of users
+
+        [NotMapped]
+        public bool ShowFullId { get; set; } // easy userid access
     }
 }

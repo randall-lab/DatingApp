@@ -1,0 +1,151 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENT POSITIONING - Accounting for sidebar */
+h1, hr, .card, p:not(.card p) {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+/* 3. PAGE TITLE - "Preference Details" as one line */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+}
+
+/* 4. HR SEPARATOR */
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* 5. LOADING TEXT */
+p em {
+    color: #64748b;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+/* 6. CARD CONTAINER - Light blue card */
+.card {
+    background-color: #f0f9ff !important;
+    border-radius: 20px !important;
+    border: 1px solid #e0f2fe !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    max-width: 700px !important;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 40px !important;
+}
+
+/* 7. SECTION HEADING - "My Preferences" */
+h3 {
+    color: #111b27;
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    margin-top: 0;
+}
+
+/* 8. PREFERENCE INFO ROWS */
+.card-body p {
+    color: #475569;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+    .card-body p strong {
+        color: #111b27;
+        font-weight: 700;
+        margin-right: 8px;
+    }
+
+/* 9. BUTTONS CONTAINER */
+.mt-3 {
+    margin-top: 30px !important;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* 10. PRIMARY BUTTON - Cyan */
+.btn-primary {
+    background-color: #00e5ff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 800 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        opacity: 0.95;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* 11. SECONDARY BUTTON - Navy outline */
+.btn-secondary {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 700 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        opacity: 0.95;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* 12. RESPONSIVE */
+@media (max-width: 768px) {
+    h1, hr, .card, p:not(.card p) {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .card {
+        max-width: 100% !important;
+    }
+
+    .card-body {
+        padding: 25px !important;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .mt-3 {
+        flex-direction: column;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+}

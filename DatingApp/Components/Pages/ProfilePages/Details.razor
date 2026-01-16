@@ -26,7 +26,7 @@ else
 {
     <div class="card" style="max-width:600px;">
         <div class="card-body text-center">
-            <!-- ✅ Show photo instead of raw URL -->
+            <!-- Show photo instead of raw URL -->
             @if (!string.IsNullOrEmpty(profile.PhotoURL))
             {
                 <img src="@profile.PhotoURL" class="img-thumbnail mb-3" style="max-width:200px;" />
@@ -43,12 +43,6 @@ else
 
             <p><strong>Bio:</strong> @(string.IsNullOrEmpty(profile.Bio) ? "No bio yet" : profile.Bio)</p>
             <p><strong>Interests:</strong> @(string.IsNullOrEmpty(profile.Interest) ? "No interests set" : profile.Interest)</p>
-
-            <!-- ✅ Friendlier display for verification -->
-            <p>
-                <strong>Status:</strong>
-                @(profile.IsVerified ? "✔ Verified" : "Not Verified")
-            </p>
 
             <p><small>Last Active: @profile.LastActiveDate.ToString("g")</small></p>
 

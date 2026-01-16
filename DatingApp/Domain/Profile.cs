@@ -1,4 +1,6 @@
-﻿namespace DatingApp.Domain
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DatingApp.Domain
 {
     public class Profile
     {
@@ -17,8 +19,6 @@
         public string? Bio { get; set; }
         public string? Interest { get; set; }
         public string? PhotoURL { get; set; }
-
-        // System-controlled fields
         public bool IsVerified { get; set; }
         public DateTime LastActiveDate { get; set; }
     }
