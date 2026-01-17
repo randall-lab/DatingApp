@@ -28,11 +28,12 @@ else
                 @foreach (var msg in messages)
                 {
                     <li>
-                        <strong>@msg.SenderId:</strong> @msg.MessageText
+                        <strong>@msg.SenderFirstName:</strong> @msg.MessageText
                         <span class="text-muted">(@msg.Timestamp)</span>
                     </li>
                 }
             </ul>
+
 
             <!-- Delete form -->
             <EditForm Model="messages" OnValidSubmit="DeleteConversation">
@@ -61,8 +62,29 @@ else
         if (messages is null || !messages.Any())
         {
             NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        // Collect sender IDs
+        var senderIds = messages
+            .Where(m => m.SenderId != null)
+            .Select(m => m.SenderId!)
+            .Distinct()
+            .ToList();
+
+        // Load profiles
+        var profiles = await context.Profile
+            .Where(p => senderIds.Contains(p.UserId))
+            .ToListAsync();
+
+        // Populate SenderFirstName
+        foreach (var msg in messages)
+        {
+            var profile = profiles.FirstOrDefault(p => p.UserId == msg.SenderId);
+            msg.SenderFirstName = profile?.FirstName ?? msg.SenderId;
         }
     }
+
 
     private async Task DeleteConversation()
     {

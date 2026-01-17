@@ -1,7 +1,6 @@
 ﻿@page "/messages"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
 @implements IAsyncDisposable
@@ -11,47 +10,106 @@
 
 <PageTitle>Messages Overview</PageTitle>
 
-<h1>Messages Overview</h1>
+@* --- DIFFERENT: Class added for CSS sidebar alignment --- *@
+<h1 class="welcome-title">Messages Overview</h1>
+<hr />
 
-<QuickGrid TGridItem="MessageGroup" Class="table" Items="GroupedMessages">
-    <PropertyColumn Property="m => m.MatchId" Title="Match ID" />
-    <PropertyColumn Property="m => m.LastMessageText" Title="Last Message" />
-    <PropertyColumn Property="m => m.LastTimestamp" Title="Last Activity" />
+@* --- DIFFERENT: Replaced QuickGrid with a manual loop for card styling --- *@
+<div class="messages-container">
+    @if (GroupedMessages == null)
+    {
+        <p><em>Loading conversations...</em></p>
+    }
+    else if (!GroupedMessages.Any())
+    {
+        <p class="no-data">No messages found in the system.</p>
+    }
+    else
+    {
+        @foreach (var m in GroupedMessages)
+        {
+            <div class="conversation-card">
+                <div class="message-main">
+                    <span class="match-id-badge">
+                        @m.UserOneName vs @m.UserTwoName
+                    </span>
 
-    <TemplateColumn Context="m">
-        <a href="@($"/messages/details?matchId={m.MatchId}")">Details</a> |
-        <a href="@($"/messages/delete/{m.MatchId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+                    <p class="last-message">@m.LastMessageText</p>
+                    <span class="message-meta">Last Activity: @m.LastTimestamp.ToString("g")</span>
+                </div>
 
+                <div class="message-actions">
+                    <a href="@($"/messages/details?matchId={m.MatchId}")" class="btn-action details">Details</a>
+                    <a href="@($"/messages/delete/{m.MatchId}")" class="btn-action delete">Delete</a>
+                </div>
+            </div>
+        }
+    }
+</div>
 
 @code {
     private DatingAppContext context = default!;
-    private IQueryable<MessageGroup> GroupedMessages = default!;
+    private List<MessageGroup> GroupedMessages = default!;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
 
-        // Group messages by MatchId
-        GroupedMessages = context.Message
+        // Load grouped messages
+        var grouped = await context.Message
             .GroupBy(m => m.MatchId)
-            .Select(g => new MessageGroup
+            .Select(g => new
             {
                 MatchId = g.Key,
-                LastMessageText = g.OrderByDescending(m => m.Timestamp).First().MessageText,
+                LastMessage = g.OrderByDescending(m => m.Timestamp).First(),
                 LastTimestamp = g.Max(m => m.Timestamp)
             })
-            .OrderByDescending(m => m.LastTimestamp);
+            .OrderByDescending(x => x.LastTimestamp)
+            .ToListAsync();
+
+        // Get all match IDs
+        var matchIds = grouped.Select(x => x.MatchId).ToList();
+        var matches = await context.Match
+            .Where(m => matchIds.Contains(m.MatchId))
+            .ToListAsync();
+
+        // Collect all user IDs from those matches
+        var userIds = matches.Select(m => m.UserId_One)
+                             .Concat(matches.Select(m => m.UserId_Two))
+                             .Distinct()
+                             .ToList();
+
+        var profiles = await context.Profile
+            .Where(p => userIds.Contains(p.UserId))
+            .ToListAsync();
+
+        // Build final list
+        GroupedMessages = grouped.Select(x =>
+        {
+            var match = matches.First(m => m.MatchId == x.MatchId);
+            var userOne = profiles.FirstOrDefault(p => p.UserId == match.UserId_One);
+            var userTwo = profiles.FirstOrDefault(p => p.UserId == match.UserId_Two);
+
+            return new MessageGroup
+            {
+                MatchId = x.MatchId,
+                LastMessageText = x.LastMessage.MessageText,
+                LastTimestamp = x.LastTimestamp,
+                UserOneName = userOne?.FirstName ?? match.UserId_One,
+                UserTwoName = userTwo?.FirstName ?? match.UserId_Two
+            };
+        }).ToList();
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
 
-    // DTO for grouped conversations
     private class MessageGroup
     {
         public int MatchId { get; set; }
         public string? LastMessageText { get; set; }
         public DateTime LastTimestamp { get; set; }
+        public string? UserOneName { get; set; }
+        public string? UserTwoName { get; set; }
     }
+
 }

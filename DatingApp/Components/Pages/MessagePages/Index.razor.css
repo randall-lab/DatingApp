@@ -1,0 +1,121 @@
+﻿/* --- 1. GLOBAL LAYOUT --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important; /* Soft grey-blue background */
+    font-family: 'Inter', sans-serif;
+}
+
+/* Sidebar Offset: ensures content doesn't hide under the nav menu */
+.welcome-title, hr, .messages-container, .no-data {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+.welcome-title {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    letter-spacing: -1.5px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* --- 2. MESSAGES CONTAINER --- */
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+/* --- 3. CONVERSATION CARD (Matches your Block/Match Index look) --- */
+.conversation-card {
+    background-color: #f0f9ff; /* Soft blue brand card */
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+    .conversation-card:hover {
+        transform: translateY(-3px);
+        border-color: #00e5ff; /* Cyan highlight on hover */
+    }
+
+/* --- 4. MESSAGE CONTENT SECTION --- */
+.message-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.match-id-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #0d9488; /* Teal color for the ID label */
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.last-message {
+    color: #111b27;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.message-meta {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* --- 5. ACTION BUTTONS --- */
+.message-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-action {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+    /* DIFFERENT: The Black Button styling for "Details" */
+    .btn-action.details {
+        background-color: #111b27 !important; /* Brand Dark Navy / Black */
+        color: white !important;
+        border: none !important;
+    }
+
+    /* DIFFERENT: The Red Outline styling for "Delete" */
+    .btn-action.delete {
+        background-color: transparent;
+        border: 2px solid #dc2626;
+        color: #dc2626;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+
+/* --- 6. EMPTY STATE --- */
+.no-data {
+    color: #64748b;
+    font-style: italic;
+    font-size: 1.1rem;
+}

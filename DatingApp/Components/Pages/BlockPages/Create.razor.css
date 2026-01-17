@@ -1,0 +1,100 @@
+﻿/* --- 1. GLOBAL LAYOUT --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+h2, hr, .card {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+h2 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    letter-spacing: -1.5px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* --- 2. THE BLOCK CARD --- */
+.card {
+    background-color: #f0f9ff !important; /* Soft blue brand background */
+    border: 1px solid #e0f2fe !important;
+    border-radius: 20px !important;
+    overflow: hidden; /* Ensures image corners match card radius */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 20rem; /* Keeps your specified width */
+}
+
+/* Profile image in the card */
+.card-img-top {
+    border-bottom: 2px solid #e0f2fe;
+}
+
+.card-title {
+    color: #111b27;
+    font-weight: 800;
+    font-size: 1.4rem;
+}
+
+.card-text {
+    color: #475569;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* --- 3. BUTTONS --- */
+
+/* Danger/Confirm Block Button */
+.btn-danger {
+    background-color: #dc2626 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 800 !important;
+    padding: 10px 20px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-danger:hover {
+        background-color: #b91c1c !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+/* Secondary/Cancel Button */
+.btn-secondary {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 10px !important;
+    color: #111b27 !important;
+    font-weight: 700 !important;
+    padding: 8px 20px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-secondary:hover {
+        background-color: #111b27 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+    }
+
+/* --- 4. LOADING STATE --- */
+p {
+    color: #64748b;
+    font-style: italic;
+}

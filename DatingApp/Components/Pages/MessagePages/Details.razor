@@ -18,13 +18,18 @@
 else
 {
     <ul>
-        @foreach (var msg in messages)
-        {
-            <li>
-                <strong>@msg.SenderId:</strong> @msg.MessageText
-                <span class="text-muted">(@msg.Timestamp)</span>
-            </li>
-        }
+        <ul>
+            @foreach (var msg in messages)
+            {
+                <li>
+                    <strong>@msg.SenderFirstName:</strong> @msg.MessageText
+                    <span class="text-muted">(@msg.Timestamp)</span>
+                </li>
+            }
+        </ul>
+
+
+
     </ul>
     <a href="/messages">Back to List</a>
 }
@@ -32,13 +37,14 @@ else
 @code {
     private List<Message>? messages;
 
-    // This is where you declare it
     [SupplyParameterFromQuery]
     private int MatchId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
+
+        // Load messages
         messages = await context.Message
             .Where(m => m.MatchId == MatchId)
             .OrderBy(m => m.Timestamp)
@@ -47,6 +53,26 @@ else
         if (messages is null || !messages.Any())
         {
             NavigationManager.NavigateTo("notfound");
+            return;
+        }
+
+        // Collect sender IDs
+        var senderIds = messages
+            .Where(m => m.SenderId != null)
+            .Select(m => m.SenderId!)
+            .Distinct()
+            .ToList();
+
+        // Load profiles for those senders
+        var profiles = await context.Profile
+            .Where(p => senderIds.Contains(p.UserId))
+            .ToListAsync();
+
+        // Populate SenderFirstName
+        foreach (var msg in messages)
+        {
+            var profile = profiles.FirstOrDefault(p => p.UserId == msg.SenderId);
+            msg.SenderFirstName = profile?.FirstName ?? msg.SenderId; // fallback to ID
         }
     }
 }

@@ -1,0 +1,135 @@
+﻿/* --- 1. GLOBAL LAYOUT --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+h1.welcome-title, hr, .blocks-container, .no-data {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+h1.welcome-title {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    letter-spacing: -1.5px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* --- 2. BLOCKS CONTAINER --- */
+.blocks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+/* --- 3. BLOCK CARD --- */
+.block-card {
+    background-color: #f0f9ff; /* Light blue brand card */
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+    .block-card:hover {
+        transform: translateY(-3px);
+    }
+
+/* --- 4. PROFILE SECTION --- */
+.block-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-img-circle {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #00e5ff; /* Cyan brand border */
+}
+
+.no-photo {
+    background-color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: white;
+}
+
+.block-info h2 {
+    color: #111b27;
+    font-weight: 800;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.block-date {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 4px 0;
+}
+
+/* --- 5. ACTION BUTTONS --- */
+.block-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-action {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+    /* THE BLACK BUTTON (Redone based on your example's 'edit' class) */
+    .btn-action.delete {
+        background-color: #111b27 !important; /* Brand Dark Navy / Black */
+        color: white !important;
+        border: none !important;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+
+/* --- 6. ADMIN SPECIFIC VIEW --- */
+.admin-info {
+    color: #111b27;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+    .admin-info strong {
+        color: #0d9488; /* Teal for labels */
+    }
+
+/* --- 7. EMPTY STATE --- */
+.no-data {
+    color: #64748b;
+    font-style: italic;
+    font-size: 1.1rem;
+}

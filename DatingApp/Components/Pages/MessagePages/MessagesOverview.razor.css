@@ -1,0 +1,90 @@
+﻿/* --- 1. GLOBAL LAYOUT --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+h1, hr, .list-group {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    letter-spacing: -1.5px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* --- 2. MESSAGE LIST CONTAINER --- */
+.list-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-left: 0;
+}
+
+/* --- 3. THE CHAT ITEM (CARD) --- */
+.list-group-item {
+    background-color: #f0f9ff !important; /* Light blue card */
+    border-radius: 16px !important;
+    border: 1px solid #e0f2fe !important;
+    padding: 20px 25px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .list-group-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        border-color: #00e5ff !important; /* Cyan border on hover */
+    }
+
+    /* --- 4. PARTNER INFO (Photo & Name) --- */
+    .list-group-item .d-flex.align-items-center span {
+        color: #111b27;
+        font-weight: 700;
+        font-size: 1.2rem;
+        letter-spacing: -0.3px;
+    }
+
+    /* Profile Photo Circle */
+    .list-group-item img {
+        border: 3px solid #00e5ff; /* Cyan brand border */
+        box-shadow: 0 2px 8px rgba(0, 229, 255, 0.2);
+        object-fit: cover;
+    }
+
+/* --- 5. CHAT BUTTON (CYAN) --- */
+.btn-primary {
+    background-color: #00e5ff !important; /* Vibrant Cyan */
+    border: none !important;
+    border-radius: 10px !important;
+    color: #111b27 !important; /* Dark text for contrast */
+    font-weight: 800 !important;
+    padding: 10px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #00d2eb !important;
+        transform: scale(1.05);
+    }
+
+/* --- 6. EMPTY STATE TEXT --- */
+p {
+    margin-left: 60px;
+    color: #64748b;
+    font-size: 1.1rem;
+    font-style: italic;
+}

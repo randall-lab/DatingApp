@@ -1,0 +1,71 @@
+﻿/* --- 1. GLOBAL LAYOUT --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+h1, hr, ul, .back-link {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    letter-spacing: -1.5px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* --- 2. MESSAGE LIST --- */
+ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+li {
+    background-color: #f0f9ff !important;
+    border: 1px solid #e0f2fe !important;
+    border-radius: 12px;
+    padding: 15px 20px;
+    color: #1e293b;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+    li strong {
+        color: #111b27;
+        font-weight: 700;
+        margin-right: 5px;
+    }
+
+.text-muted {
+    font-size: 0.8rem;
+    color: #94a3b8 !important;
+    display: block;
+    margin-top: 4px;
+}
+
+/* --- 3. BACK LINK --- */
+a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #111b27;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s;
+    margin-left: 70px;
+}
+
+    a:hover {
+        color: #00e5ff; /* Cyan hover */
+    }
