@@ -1,8 +1,11 @@
 ﻿@page "/blocks/details"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+
+@attribute [Authorize(Roles = "Administrator, User")]
 
 <PageTitle>Details</PageTitle>
 

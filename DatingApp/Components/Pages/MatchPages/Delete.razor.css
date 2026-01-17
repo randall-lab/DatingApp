@@ -1,0 +1,128 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENT POSITIONING */
+/* Lower the margin-left from 60px to 20px to move everything left */
+h1, p:not(.card-body p), .card-container, h2, hr {
+    margin-left: 20px; /* <--- CHANGE THIS VALUE */
+    margin-right: 40px;
+}
+
+/* 3. PAGE TITLE */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    letter-spacing: -1.5px;
+}
+
+h2 {
+    color: #64748b;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* 4. WARNING TEXT */
+p:not(.card-body p) {
+    color: #475569;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+/* 5. HR SEPARATOR */
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+    margin-left: 20px; /* <--- MATCH THE VALUE ABOVE */
+}
+
+/* 6. CARD CONTAINER - Light blue card matching previous designs */
+.card-container {
+    background-color: #f0f9ff;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin-left: 20px; /* <--- MATCH THE VALUE ABOVE */
+}
+
+/* 7. DEFINITION LIST STYLING (The Row Layout) */
+.row {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(224, 242, 254, 0.5);
+    margin: 0; /* Reset bootstrap row margin */
+}
+
+    .row:last-of-type {
+        border-bottom: none;
+    }
+
+/* Labels (MatchDate, Active, etc.) */
+.col-sm-2 {
+    color: #111b27;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* Values (The Data) */
+.col-sm-10 {
+    color: #475569;
+    font-size: 1.05rem;
+}
+
+/* 8. DELETE BUTTON - Red brand style */
+.btn-danger {
+    background-color: #dc2626 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+/* 9. BACK TO LIST LINK - Styled as the Secondary Navy Button */
+a[href="/matches"] {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 700 !important;
+    padding: 10px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+    margin-left: 10px;
+}
+
+    a[href="/matches"]:hover {
+        background-color: #111b27 !important;
+        color: #ffffff !important;
+    }
+
+/* 10. FORM SPACING */
+form {
+    margin-top: 30px;
+}

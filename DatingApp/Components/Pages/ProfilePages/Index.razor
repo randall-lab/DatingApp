@@ -1,7 +1,6 @@
 ﻿@page "/profiles"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
 @implements IAsyncDisposable
@@ -9,48 +8,58 @@
 
 @attribute [Authorize(Roles = "Administrator")]
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Profiles</PageTitle>
 
-<h1>Index</h1>
+@* CHANGED: Added 'welcome-title' class for brand consistency *@
+<h1 class="welcome-title">Profile Directory</h1>
+<hr />
 
-<QuickGrid Class="table" Items="context.Profile">
-
-    <TemplateColumn Title="User ID" Context="profile">
-        <span style="font-size:10px;">
-            @profile.UserId
-        </span>
-    </TemplateColumn>
-
-    <PropertyColumn Property="profile => profile.FirstName" />
-    <PropertyColumn Property="profile => profile.LastName" />
-    <PropertyColumn Property="profile => profile.Age" />
-    <PropertyColumn Property="profile => profile.Gender" />
-    <PropertyColumn Property="profile => profile.Bio" />
-    <PropertyColumn Property="profile => profile.Interest" />
-    <PropertyColumn Property="profile => profile.RegionName" />
-    <TemplateColumn Title="Last Updated Date" Context="profile">
-        <span style="font-size:15px;">
-            @profile.LastActiveDate
-        </span>
-    </TemplateColumn>
-    <TemplateColumn Title="Photo" Context="profile">
-        @if (!string.IsNullOrEmpty(profile.PhotoURL))
+@* CHANGED: Replaced QuickGrid with a flex container for cards *@
+<div class="profiles-container">
+    @if (context == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @foreach (var profile in context.Profile)
         {
-            <img src="@profile.PhotoURL" alt="Profile Photo"
-                 style="width:80px; height:80px; border-radius:80%; object-fit:cover;" />
-        }
-        else
-        {
-            <span>No photo</span>
-        }
-    </TemplateColumn>
+            <div class="profile-card">
+                <div class="profile-main">
+                    @* Photo Section *@
+                    <div class="photo-wrapper">
+                        @if (!string.IsNullOrEmpty(profile.PhotoURL))
+                        {
+                            <img src="@profile.PhotoURL" alt="Profile Photo" class="profile-img-circle" />
+                        }
+                        else
+                        {
+                            <div class="profile-img-circle no-photo">No Photo</div>
+                        }
+                    </div>
 
-    <TemplateColumn Context="profile">
-        <a href="@($"profiles/edit?id={profile.ProfileId}")">Edit</a>       
-        <a href="@($"profiles/delete?id={profile.ProfileId}")">Delete</a>
-    </TemplateColumn>
+                    @* Details Section *@
+                    <div class="profile-info">
+                        <h2 class="profile-name">@profile.FirstName @profile.LastName</h2>
+                        <p class="profile-meta">
+                            <strong>Age:</strong> @profile.Age | <strong>Gender:</strong> @profile.Gender
+                        </p>
+                        <p class="profile-region"><strong>Region:</strong> @profile.RegionName</p>
+                        <p class="profile-bio"><strong>Bio:</strong> @profile.Bio</p>
+                        <p class="profile-interest"><strong>Interest:</strong> @profile.Interest</p>
+                        <p class="last-active">Last Active: @profile.LastActiveDate.ToShortDateString()</p>
+                    </div>
+                </div>
 
-</QuickGrid>
+                @* Admin Actions *@
+                <div class="profile-actions">
+                    <a href="@($"profiles/edit?id={profile.ProfileId}")" class="btn-action edit">Edit</a>
+                    <a href="@($"profiles/delete?id={profile.ProfileId}")" class="btn-action delete">Delete</a>
+                </div>
+            </div>
+        }
+    }
+</div>
 
 @code {
     private DatingAppContext context = default!;
@@ -60,5 +69,8 @@
         context = DbFactory.CreateDbContext();
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        await context.DisposeAsync();
+    }
 }

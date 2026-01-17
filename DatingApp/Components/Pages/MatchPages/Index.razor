@@ -1,7 +1,6 @@
 ﻿@page "/matches"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
 @inject IDbContextFactory<DatingAppContext> DbFactory
@@ -11,73 +10,80 @@
 
 <PageTitle>Matches</PageTitle>
 
-<h1>Matches</h1>
+@* 'welcome-title' class to match EXAMPLES styling *@
+<h1 class="welcome-title">Matches</h1>
+<hr />
 
-@if (matches == null || !matches.Any())
-{
-    <p>No matches found.</p>
-}
-
-else
-{
-    <QuickGrid TGridItem="Match" Class="table" Items="matches">
-        <PropertyColumn Property="m => m.MatchDate" Title="Matched On" />
-        <PropertyColumn Property="m => m.Active" Title="Status" />
-
-        @if (UserIsAdmin)
+@* Wrapped content in 'matches-container' for flexbox spacing *@
+<div class="matches-container">
+    @if (matches == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (!matches.Any())
+    {
+        <p class="no-data">No matches found.</p>
+    }
+    else
+    {
+        @foreach (var match in matches)
         {
-            <TemplateColumn Title="User One ID" Context="m">
-                <span style="font-size:10px;">
-                    @m.UserId_One
-                </span>
-            </TemplateColumn>
+            @* Table/QuickGrid with 'match-card' divs *@
+            <div class="match-card">
+                @if (!UserIsAdmin)
+                {
+                    @* USER VIEW: Show the circular profile image and match info *@
+                    <div class="match-profile">
+                        <img src="@match.OtherUserPhoto" alt="Profile Photo" class="profile-img-circle" />
+                        <div class="match-info">
+                            <h2 class="profile-name">@match.OtherUserName</h2>
+                            <p class="match-meta">Matched on: @match.MatchDate.ToShortDateString()</p>
+                            <span class="status-badge @(match.Active ? "active" : "inactive")">
+                                @(match.Active ? "Connected" : "Inactive")
+                            </span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @* ADMIN VIEW: Show both users involved in the match *@
+                    <div class="admin-match-view">
+                        <div class="admin-user-info">
+                            <strong>User One:</strong> @match.UserOneName <small>(@match.UserId_One)</small>
+                        </div>
+                        <div class="admin-user-info">
+                            <strong>User Two:</strong> @match.UserTwoName <small>(@match.UserId_Two)</small>
+                        </div>
+                        <div class="match-meta">
+                            <strong>Date:</strong> @match.MatchDate.ToShortDateString() |
+                            <span class="status-badge @(match.Active ? "active" : "inactive")">
+                                @(match.Active ? "Active" : "Disabled")
+                            </span>
+                        </div>
+                    </div>
+                }
 
-            <PropertyColumn Property="m => m.UserOneName" Title="User One Name" />
-
-            <TemplateColumn Title="User Two ID" Context="m">
-                <span style="font-size:10px;">
-                    @m.UserId_Two
-                </span>
-            </TemplateColumn>
-
-            <PropertyColumn Property="m => m.UserTwoName" Title="User Two Name" />
+                @* action buttons (Edit/Delete) to the right side of the card *@
+                <div class="match-actions">
+                    <a href="@($"matches/edit?matchid={match.MatchId}")" class="btn-action edit">Edit</a>
+                    @if (UserIsAdmin)
+                    {
+                        <a href="@($"matches/delete?matchid={match.MatchId}")" class="btn-action delete">Delete</a>
+                    }
+                </div>
+            </div>
         }
-
-        else
-        {
-            <PropertyColumn Property="m => m.OtherUserName" Title="Matched With" />
-            <TemplateColumn Context="match">
-                <img src="@match.OtherUserPhoto" alt="Profile Photo"
-                     style="width:80px; height:80px; border-radius:80%; object-fit:cover;" />
-            </TemplateColumn>
-
-        }
-
-        <TemplateColumn Context="match">
-            <a href="@($"matches/edit?matchid={match.MatchId}")">Unmatch</a>
-        </TemplateColumn>
-
-    </QuickGrid>
-
-}
+    }
+</div>
 
 @code {
+    private List<Match>? matches;
     private bool UserIsAdmin;
     private string? currentUserId;
-    private IQueryable<Match> matches = Enumerable.Empty<Match>().AsQueryable();
-    // private bool showActiveOnly = true;
 
     protected override async Task OnInitializedAsync()
     {
-        // Default: load active matches for users, all for admins
-        await LoadMatches(true);
-    }
-
-    private async Task LoadMatches(bool activeOnly)
-    {
         using var db = DbFactory.CreateDbContext();
-
-        // Get current user + role
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         UserIsAdmin = user.IsInRole("Administrator");
@@ -86,43 +92,28 @@ else
                      ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
         IQueryable<Match> query;
-
         if (UserIsAdmin)
         {
-            // Admins see all matches
             query = db.Match;
         }
         else
         {
-            // Users see only their own matches, filtered by activeOnly
-            query = db.Match.Where(m =>
-                (m.UserId_One == currentUserId || m.UserId_Two == currentUserId)
-                && m.Active == activeOnly);
+            // showing all matches involving the user for the index
+            query = db.Match.Where(m => (m.UserId_One == currentUserId || m.UserId_Two == currentUserId) && m.Active);
         }
 
-        var list = await query.ToListAsync();
+        matches = await query.ToListAsync();
 
-        // Populate names/photos for display
-        foreach (var m in list)
+        // Populate details for the card view
+        foreach (var m in matches)
         {
-            m.UserOneName = db.Profile
-                .Where(p => p.UserId == m.UserId_One)
-                .Select(p => p.FirstName + " " + p.LastName)
-                .FirstOrDefault();
-
-            m.UserTwoName = db.Profile
-                .Where(p => p.UserId == m.UserId_Two)
-                .Select(p => p.FirstName + " " + p.LastName)
-                .FirstOrDefault();
+            m.UserOneName = db.Profile.Where(p => p.UserId == m.UserId_One).Select(p => p.FirstName + " " + p.LastName).FirstOrDefault();
+            m.UserTwoName = db.Profile.Where(p => p.UserId == m.UserId_Two).Select(p => p.FirstName + " " + p.LastName).FirstOrDefault();
 
             string otherUserId = m.UserId_One == currentUserId ? m.UserId_Two : m.UserId_One;
             var otherProfile = db.Profile.FirstOrDefault(p => p.UserId == otherUserId);
-
             m.OtherUserName = otherProfile?.FirstName + " " + otherProfile?.LastName;
             m.OtherUserPhoto = otherProfile?.PhotoURL;
         }
-
-        matches = list.AsQueryable();
     }
 }
-

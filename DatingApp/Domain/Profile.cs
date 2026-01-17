@@ -21,5 +21,15 @@ namespace DatingApp.Domain
         public string? PhotoURL { get; set; }
         public bool IsVerified { get; set; }
         public DateTime LastActiveDate { get; set; }
+
+        [NotMapped]
+        public DateTime? SuspendedUntil { get; set; }
+
+        [NotMapped]
+        public string SuspensionTimer => SuspendedUntil.HasValue
+            ? (SuspendedUntil.Value - DateTime.Now).TotalMinutes > 0
+                ? $"{(SuspendedUntil.Value - DateTime.Now).TotalMinutes:F0} minutes remaining"
+                : "Suspension expired"
+            : "Not suspended";
     }
 }

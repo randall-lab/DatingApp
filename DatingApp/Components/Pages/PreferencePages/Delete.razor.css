@@ -1,0 +1,107 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENT POSITIONING - Accounting for sidebar */
+/* Targets the header, separator, card, and the "Are you sure..." text */
+h1, hr, .card, p:not(.card p) {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+/* 3. PAGE TITLE */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+}
+
+/* 4. HR SEPARATOR */
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* 5. CARD CONTAINER - Light blue card matching Details */
+.card {
+    background-color: #f0f9ff !important;
+    border-radius: 20px !important;
+    border: 1px solid #e0f2fe !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    padding: 20px;
+}
+
+/* 6. CARD TITLE (h3) */
+h3 {
+    color: #111b27;
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+/* 7. DETAIL TEXT (p inside card) */
+.card-body p {
+    color: #475569;
+    font-size: 1.05rem;
+    margin-bottom: 12px;
+}
+
+.card-body strong {
+    color: #111b27;
+    font-weight: 700;
+}
+
+/* 8. DELETE BUTTON - Red for Danger */
+.btn-danger {
+    background-color: #dc2626 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+/* 9. SECONDARY BUTTON - Navy outline matching Details */
+.btn-secondary {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 700 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-secondary:hover {
+        background-color: #111b27 !important;
+        color: #ffffff !important;
+    }
+
+/* 10. FLEX BOX GAP (For the buttons) */
+.d-flex.gap-2 {
+    gap: 15px !important; /* Slightly wider gap matching brand feel */
+}

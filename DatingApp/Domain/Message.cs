@@ -1,4 +1,7 @@
-﻿namespace DatingApp.Domain
+﻿using DatingApp.Data;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DatingApp.Domain
 {
     public class Message
     {
@@ -10,5 +13,9 @@
 
         public string? MessageText { get; set; }
         public DateTime Timestamp { get; set; }
+
+        [NotMapped] 
+        public string? SenderFirstName { get; set; }
+
     }
 }

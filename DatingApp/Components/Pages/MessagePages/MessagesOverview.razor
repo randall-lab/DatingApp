@@ -1,0 +1,89 @@
+﻿@page "/messages/overview"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
+
+<PageTitle>Messages Overview</PageTitle>
+
+<h1>Messages</h1>
+<hr />
+
+@if (ActiveMatches is null)
+{
+    <p>Loading your matches...</p>
+}
+else if (!ActiveMatches.Any())
+{
+    <p>You don’t have any active matches yet. Start swiping to connect!</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var match in ActiveMatches)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    @if (!string.IsNullOrEmpty(match.PartnerPhoto))
+                    {
+                        <img src="@match.PartnerPhoto" alt="Profile Photo"
+                             style="width:50px; height:50px; border-radius:50%; object-fit:cover; margin-right:10px;" />
+                    }
+                    <span>@match.PartnerName</span>
+                </div>
+                <a class="btn btn-primary" href="@($"/messages/chat/{match.MatchId}")">Chat</a>
+            </li>
+        }
+    </ul>
+
+}
+
+@code {
+    private List<MatchOverviewModel>? ActiveMatches;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var db = DbFactory.CreateDbContext();
+
+        // Get logged-in user
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var currentUserId = user.FindFirst("sub")?.Value
+                         ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        // Query active matches
+        var matches = await db.Match
+            .Where(m => m.Active && (m.UserId_One == currentUserId || m.UserId_Two == currentUserId))
+            .ToListAsync();
+
+        ActiveMatches = new List<MatchOverviewModel>();
+
+        foreach (var m in matches)
+        {
+            // Determine the "other" user
+            var otherUserId = m.UserId_One == currentUserId ? m.UserId_Two : m.UserId_One;
+
+            // Lookup their profile
+            var otherProfile = db.Profile.FirstOrDefault(p => p.UserId == otherUserId);
+
+            ActiveMatches.Add(new MatchOverviewModel
+            {
+                MatchId = m.MatchId,
+                PartnerName = otherProfile != null
+                    ? $"{otherProfile.FirstName} {otherProfile.LastName}"
+                    : otherUserId, // fallback to ID
+                PartnerPhoto = otherProfile?.PhotoURL
+            });
+        }
+    }
+
+
+    // Simple DTO for overview
+    private class MatchOverviewModel
+    {
+        public int MatchId { get; set; }
+        public string PartnerName { get; set; } = string.Empty;
+        public string? PartnerPhoto { get; set; }
+    }
+}

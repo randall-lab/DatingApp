@@ -1,7 +1,6 @@
 ﻿@page "/preferences"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
 @implements IAsyncDisposable
@@ -9,31 +8,56 @@
 
 @attribute [Authorize(Roles = "Administrator")]
 
+<PageTitle>Preferences</PageTitle>
 
-<PageTitle>Index</PageTitle>
+@* CHANGED: Added 'welcome-title' for brand consistency *@
+<h1 class="welcome-title">User Preferences</h1>
+<hr />
 
-<h1>Index</h1>
+@* CHANGED: Replaced QuickGrid with a flex container for cards *@
+<div class="preferences-container">
+    @if (context == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @foreach (var preference in context.Preference)
+        {
+            <div class="preference-card">
+                <div class="pref-main">
+                    @* User Info Section *@
+                    <div class="pref-user-header">
+                        <h2 class="user-name">@preference.UserFullName</h2>
+                        <span class="user-id">ID: @preference.UserId</span>
+                    </div>
 
-<QuickGrid Class="table" Items="context.Preference">
+                    @* Preference Details Grid *@
+                    <div class="pref-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Preferred Gender</span>
+                            <span class="detail-value">@preference.PreferredGender</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Age Range</span>
+                            <span class="detail-value">@preference.MinAge – @preference.MaxAge years</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Search Radius</span>
+                            <span class="detail-value">@preference.LocationRadius km</span>
+                        </div>
+                    </div>
+                </div>
 
-    <TemplateColumn Title="User ID" Context="profile">
-        <span style="font-size:10px;">
-            @profile.UserId
-        </span>
-    </TemplateColumn>
-
-    <PropertyColumn Property="preference => preference.UserFullName" Title="Name" />
-    <PropertyColumn Property="preference => preference.PreferredGender" />
-    <PropertyColumn Property="preference => preference.MinAge" />
-    <PropertyColumn Property="preference => preference.MaxAge" />
-    <PropertyColumn Property="preference => preference.LocationRadius" />
-
-    <TemplateColumn Context="preference">
-        <a href="@($"preferences/edit?id={preference.PreferenceId}")">Edit</a> |
-        <a href="@($"preferences/delete?id={preference.PreferenceId}")">Delete</a>
-
-    </TemplateColumn>
-</QuickGrid>
+                @* Action Buttons *@
+                <div class="pref-actions">
+                    <a href="@($"preferences/edit?id={preference.PreferenceId}")" class="btn-action edit">Edit</a>
+                    <a href="@($"preferences/delete?id={preference.PreferenceId}")" class="btn-action delete">Delete</a>
+                </div>
+            </div>
+        }
+    }
+</div>
 
 @code {
     private DatingAppContext context = default!;
@@ -42,14 +66,17 @@
     {
         context = DbFactory.CreateDbContext();
 
-        foreach (var pref in context.Preference) 
-        { 
+        foreach (var pref in context.Preference)
+        {
             pref.UserFullName = context.Profile
                 .Where(p => p.UserId == pref.UserId)
                 .Select(p => p.FirstName + " " + p.LastName)
-                .FirstOrDefault(); 
+                .FirstOrDefault();
         }
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        await context.DisposeAsync();
+    }
 }

@@ -24,7 +24,7 @@
     <div class="mb-3">
         <label class="form-label">Preferred Gender</label>
         <InputSelect @bind-Value="Preference.PreferredGender" class="form-control form-control-sm" style="max-width:150px;">
-            <option value="">Select gender</option>
+            <option value="">-- Select Gender --</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Non-Binary">Non-Binary</option>
@@ -47,7 +47,7 @@
                              style="max-width:80px;" />
             </div>
         </div>
-        <p class="mt-2">Selected Range: @Preference.MinAge – @Preference.MaxAge</p>
+        <p class="mt-2" style="max-width:200px;">Selected Range: @Preference.MinAge – @Preference.MaxAge</p>
     </div>
 
     <div class="mb-3">
@@ -57,7 +57,7 @@
                      style="max-width:100px;" />
     </div>
 
-    <button class="btn btn-primary">Save</button>
+    <button class="btn btn-primary" style="max-width: 380px">Save</button>
 </EditForm>
 
 @code {

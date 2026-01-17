@@ -1,4 +1,5 @@
 ﻿@page "/messages"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
@@ -6,35 +7,51 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 
-<PageTitle>Index</PageTitle>
+@attribute [Authorize(Roles = "Administrator")]
 
-<h1>Index</h1>
+<PageTitle>Messages Overview</PageTitle>
 
-<p>
-    <a href="messages/create">Create New</a>
-</p>
+<h1>Messages Overview</h1>
 
-<QuickGrid Class="table" Items="context.Message">
-    <PropertyColumn Property="message => message.MatchId" />
-    <PropertyColumn Property="message => message.SenderId" />
-    <PropertyColumn Property="message => message.ReceiverId" />
-    <PropertyColumn Property="message => message.MessageText" />
-    <PropertyColumn Property="message => message.Timestamp" />
+<QuickGrid TGridItem="MessageGroup" Class="table" Items="GroupedMessages">
+    <PropertyColumn Property="m => m.MatchId" Title="Match ID" />
+    <PropertyColumn Property="m => m.LastMessageText" Title="Last Message" />
+    <PropertyColumn Property="m => m.LastTimestamp" Title="Last Activity" />
 
-    <TemplateColumn Context="message">
-        <a href="@($"messages/edit?messageid={message.MessageId}")">Edit</a> |
-        <a href="@($"messages/details?messageid={message.MessageId}")">Details</a> |
-        <a href="@($"messages/delete?messageid={message.MessageId}")">Delete</a>
+    <TemplateColumn Context="m">
+        <a href="@($"/messages/details?matchId={m.MatchId}")">Details</a> |
+        <a href="@($"/messages/delete/{m.MatchId}")">Delete</a>
     </TemplateColumn>
 </QuickGrid>
 
+
 @code {
     private DatingAppContext context = default!;
+    private IQueryable<MessageGroup> GroupedMessages = default!;
 
     protected override void OnInitialized()
     {
         context = DbFactory.CreateDbContext();
+
+        // Group messages by MatchId
+        GroupedMessages = context.Message
+            .GroupBy(m => m.MatchId)
+            .Select(g => new MessageGroup
+            {
+                MatchId = g.Key,
+                LastMessageText = g.OrderByDescending(m => m.Timestamp).First().MessageText,
+                LastTimestamp = g.Max(m => m.Timestamp)
+            })
+            .OrderByDescending(m => m.LastTimestamp);
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
+
+    // DTO for grouped conversations
+    private class MessageGroup
+    {
+        public int MatchId { get; set; }
+        public string? LastMessageText { get; set; }
+        public DateTime LastTimestamp { get; set; }
+    }
 }

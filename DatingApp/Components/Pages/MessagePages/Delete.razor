@@ -1,70 +1,74 @@
-﻿@page "/messages/delete"
+﻿@page "/messages/delete/{MatchId:int}"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Delete</PageTitle>
+@attribute [Authorize(Roles = "Administrator")]
 
-<h1>Delete</h1>
+<PageTitle>Delete Conversation</PageTitle>
 
-<p>Are you sure you want to delete this?</p>
-<div>
-    <h2>Message</h2>
-    <hr />
-    @if (message is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">MatchId</dt>
-            <dd class="col-sm-10">@message.MatchId</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">SenderId</dt>
-            <dd class="col-sm-10">@message.SenderId</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">ReceiverId</dt>
-            <dd class="col-sm-10">@message.ReceiverId</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">MessageText</dt>
-            <dd class="col-sm-10">@message.MessageText</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Timestamp</dt>
-            <dd class="col-sm-10">@message.Timestamp</dd>
-        </dl>
-        <EditForm method="post" Model="message" OnValidSubmit="DeleteMessage" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(message is null)">Delete</button> |
-            <a href="/messages">Back to List</a>
-        </EditForm>
-    }
-</div>
+<h1>Delete Conversation</h1>
+<hr />
+
+<p>Are you sure you want to delete this entire conversation?</p>
+
+@if (messages is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card" style="max-width:600px;">
+        <div class="card-body">
+            <h3>Conversation Messages</h3>
+
+            <ul>
+                @foreach (var msg in messages)
+                {
+                    <li>
+                        <strong>@msg.SenderId:</strong> @msg.MessageText
+                        <span class="text-muted">(@msg.Timestamp)</span>
+                    </li>
+                }
+            </ul>
+
+            <!-- Delete form -->
+            <EditForm Model="messages" OnValidSubmit="DeleteConversation">
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-danger">Delete All</button>
+                    <a href="/messages" class="btn btn-secondary">Back to Messages</a>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
 
 @code {
-    private Message? message;
+    private List<Message>? messages;
 
-    [SupplyParameterFromQuery]
-    private int MessageId { get; set; }
+    [Parameter] public int MatchId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        message = await context.Message.FirstOrDefaultAsync(m => m.MessageId == MessageId);
+        messages = await context.Message
+            .Where(m => m.MatchId == MatchId)
+            .OrderBy(m => m.Timestamp)
+            .ToListAsync();
 
-        if (message is null)
+        if (messages is null || !messages.Any())
         {
             NavigationManager.NavigateTo("notfound");
         }
     }
 
-    private async Task DeleteMessage()
+    private async Task DeleteConversation()
     {
         using var context = DbFactory.CreateDbContext();
-        context.Message.Remove(message!);
+        var toDelete = context.Message.Where(m => m.MatchId == MatchId);
+        context.Message.RemoveRange(toDelete);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/messages");
     }

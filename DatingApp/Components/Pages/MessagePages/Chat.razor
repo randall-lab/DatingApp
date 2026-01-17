@@ -1,0 +1,148 @@
+﻿@page "/messages/chat/{matchId:int}"
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Chat</PageTitle>
+
+<h1>Chat</h1>
+<hr />
+
+@if (Messages is null)
+{
+    <p>Loading conversation...</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(OtherUserName))
+    {
+        <div class="d-flex align-items-center mb-3">
+            @if (!string.IsNullOrEmpty(OtherUserPhoto))
+            {
+                <img src="@OtherUserPhoto" alt="Profile Photo"
+                     style="width:60px; height:60px; border-radius:50%; object-fit:cover; margin-right:10px;" />
+            }
+            <h4 class="me-3">@OtherUserName</h4>
+
+            <div class="ms-auto">
+                <a class="btn btn-outline-danger btn-sm me-2"
+                   href="/blocks/create/@matchId">
+                    Block
+                </a>
+            </div>
+        </div>
+    }
+
+    <div class="chat-window border rounded p-3 mb-3" style="height:400px; overflow-y:auto;">
+        @foreach (var msg in Messages.OrderBy(m => m.Timestamp))
+        {
+            <div class="mb-2">
+                <strong>@msg.SenderFirstName:</strong> @msg.MessageText
+                <span class="text-muted" style="font-size:0.8em;">(@msg.Timestamp.ToShortTimeString())</span>
+            </div>
+        }
+    </div>
+
+    <EditForm Model="NewMessage" OnValidSubmit="SendMessage" FormName="chatForm" Enhance>
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="input-group">
+            <InputText id="messagetext" @bind-Value="NewMessage.MessageText"
+                       class="form-control" placeholder="Type a message..." />
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </EditForm>
+}
+
+
+@code {
+    [Parameter] public int matchId { get; set; }
+
+    private List<Message>? Messages;
+    private string? OtherUserId;
+    private string? OtherUserName;
+    private string? OtherUserPhoto;
+
+    [SupplyParameterFromForm]
+    private Message NewMessage { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var currentUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        var match = await context.Match.FindAsync(matchId);
+        if (match is null || currentUserId is null)
+        {
+            Nav.NavigateTo("/notfound");
+            return;
+        }
+
+        // Determine the other user in the match
+        OtherUserId = match.UserId_One == currentUserId ? match.UserId_Two : match.UserId_One;
+
+        var otherProfile = context.Profile.FirstOrDefault(p => p.UserId == OtherUserId);
+        OtherUserName = otherProfile != null ? $"{otherProfile.FirstName} {otherProfile.LastName}" : OtherUserId;
+        OtherUserPhoto = otherProfile?.PhotoURL;
+
+        await LoadMessages();
+    }
+
+    private async Task LoadMessages()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        var rawMessages = await context.Message
+            .Where(m => m.MatchId == matchId)
+            .OrderBy(m => m.Timestamp)
+            .ToListAsync();
+
+        foreach (var msg in rawMessages)
+        {
+            msg.SenderFirstName = context.Profile
+                .Where(p => p.UserId == msg.SenderId)
+                .Select(p => p.FirstName)
+                .FirstOrDefault();
+        }
+
+        Messages = rawMessages;
+    }
+
+    private async Task SendMessage()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var senderId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        var match = await context.Match.FindAsync(matchId);
+        if (match is null || senderId is null)
+        {
+            return;
+        }
+
+        var receiverId = match.UserId_One == senderId ? match.UserId_Two : match.UserId_One;
+
+        NewMessage.MatchId = matchId;
+        NewMessage.SenderId = senderId;
+        NewMessage.ReceiverId = receiverId;
+        NewMessage.Timestamp = DateTime.Now;
+        NewMessage.MessageText = NewMessage.MessageText?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(NewMessage.MessageText))
+        {
+            context.Message.Add(NewMessage);
+            await context.SaveChangesAsync();
+        }
+
+        NewMessage = new Message { MatchId = matchId };
+        await LoadMessages();
+    }
+}
+

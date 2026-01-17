@@ -1,38 +1,127 @@
 ﻿@page "/blocks"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
-@implements IAsyncDisposable
-@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject IDbContextFactory<DatingAppContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Index</PageTitle>
+@attribute [Authorize(Roles = "Administrator, User")]
 
-<h1>Index</h1>
+<PageTitle>Blocked Users</PageTitle>
 
-<p>
-    <a href="blocks/create">Create New</a>
-</p>
+<h1 class="welcome-title">Blocked Users</h1>
+<hr />
 
-<QuickGrid Class="table" Items="context.Block">
-    <PropertyColumn Property="block => block.BlockerId" />
-    <PropertyColumn Property="block => block.BlockedUserId" />
-    <PropertyColumn Property="block => block.BlockedDate" />
+<div class="blocks-container">
+    @if (blocks == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (!blocks.Any())
+    {
+        <p class="no-data">No blocked users found.</p>
+    }
+    else
+    {
+        @foreach (var block in blocks)
+        {
+            <div class="block-card">
+                <div class="block-main">
+                    @if (!UserIsAdmin)
+                    {
+                        @* USER VIEW: photo + name + date *@
+                        <div class="photo-wrapper">
+                            @if (!string.IsNullOrEmpty(block.BlockedPhoto))
+                            {
+                                <img src="@block.BlockedPhoto" alt="Profile Photo" class="profile-img-circle" />
+                            }
+                            else
+                            {
+                                <div class="profile-img-circle no-photo">No Photo</div>
+                            }
+                        </div>
 
-    <TemplateColumn Context="block">
-        <a href="@($"blocks/edit?blockid={block.BlockId}")">Edit</a> |
-        <a href="@($"blocks/details?blockid={block.BlockId}")">Details</a> |
-        <a href="@($"blocks/delete?blockid={block.BlockId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+                        <div class="block-info">
+                            <h2 class="profile-name">@block.BlockedName</h2>
+                            <p class="block-meta">Blocked on: @block.BlockedDate.ToShortDateString()</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @* ADMIN VIEW: no photo, compact info *@
+                        <div class="block-info admin-font">
+                            <p><strong>Blocker:</strong> @block.BlockerName <small>(@block.BlockerId)</small></p>
+                            <p><strong>Blocked:</strong> @block.BlockedName <small>(@block.BlockedUserId)</small></p>
+                            <p><strong>Date:</strong> @block.BlockedDate.ToShortDateString()</p>
+                        </div>
+                    }
+                </div>
+
+                <div class="block-actions">
+                    @if (UserIsAdmin)
+                    {
+                        <a href="@($"blocks/delete?blockid={block.BlockId}")" class="btn-action delete">Delete</a>
+                    }
+                    else
+                    {
+                        <a href="@($"blocks/delete?blockid={block.BlockId}")" class="btn-action unblock">Unblock</a>
+                    }
+                </div>
+            </div>
+        }
+
+    }
+</div>
 
 @code {
-    private DatingAppContext context = default!;
+    private List<BlockViewModel>? blocks;
+    private bool UserIsAdmin;
+    private string? currentUserId;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
+        using var db = DbFactory.CreateDbContext();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UserIsAdmin = user.IsInRole("Administrator");
+
+        currentUserId = user.FindFirst("sub")?.Value
+                     ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        IQueryable<Block> query = UserIsAdmin
+            ? db.Block
+            : db.Block.Where(b => b.BlockerId == currentUserId);
+
+        var list = await query.ToListAsync();
+
+        blocks = new List<BlockViewModel>();
+        foreach (var b in list)
+        {
+            var blockerProfile = db.Profile.FirstOrDefault(p => p.UserId == b.BlockerId);
+            var blockedProfile = db.Profile.FirstOrDefault(p => p.UserId == b.BlockedUserId);
+
+            blocks.Add(new BlockViewModel
+            {
+                BlockId = b.BlockId,
+                BlockerId = b.BlockerId ?? "",
+                BlockedUserId = b.BlockedUserId ?? "",
+                BlockedDate = b.BlockedDate,
+                BlockerName = blockerProfile != null ? blockerProfile.FirstName + " " + blockerProfile.LastName : "",
+                BlockedName = blockedProfile != null ? blockedProfile.FirstName + " " + blockedProfile.LastName : "",
+                BlockedPhoto = blockedProfile?.PhotoURL
+            });
+        }
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    private class BlockViewModel
+    {
+        public int BlockId { get; set; }
+        public string BlockerId { get; set; } = "";
+        public string BlockedUserId { get; set; } = "";
+        public DateTime BlockedDate { get; set; }
+        public string BlockerName { get; set; } = "";
+        public string BlockedName { get; set; } = "";
+        public string? BlockedPhoto { get; set; }
+    }
 }

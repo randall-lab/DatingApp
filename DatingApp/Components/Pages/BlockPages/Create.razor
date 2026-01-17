@@ -1,54 +1,110 @@
-﻿@page "/blocks/create"
+﻿@page "/blocks/create/{matchId:int}"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Create</PageTitle>
+@attribute [Authorize(Roles = "User")]
 
-<h1>Create</h1>
+<PageTitle>Block User</PageTitle>
 
-<h2>Block</h2>
+<h2>Block User</h2>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <EditForm method="post" Model="Block" OnValidSubmit="AddBlock" FormName="create" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="blockerid" class="form-label">BlockerId:</label> 
-                <InputText id="blockerid" @bind-Value="Block.BlockerId" class="form-control" /> 
-                <ValidationMessage For="() => Block.BlockerId" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="blockeduserid" class="form-label">BlockedUserId:</label> 
-                <InputText id="blockeduserid" @bind-Value="Block.BlockedUserId" class="form-control" /> 
-                <ValidationMessage For="() => Block.BlockedUserId" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="blockeddate" class="form-label">BlockedDate:</label> 
-                <InputDate id="blockeddate" @bind-Value="Block.BlockedDate" class="form-control" /> 
-                <ValidationMessage For="() => Block.BlockedDate" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
-        </EditForm>
-    </div>
-</div>
 
-<div>
-    <a href="/blocks">Back to List</a>
-</div>
+@if (OtherProfile is null)
+{
+    <p>Loading user info...</p>
+}
+else
+{
+    <div class="card" style="width: 20rem;">
+        @if (!string.IsNullOrEmpty(OtherProfile.PhotoURL))
+        {
+            <img src="@OtherProfile.PhotoURL" class="card-img-top"
+                 alt="Profile Photo" style="object-fit:cover; height:200px;" />
+        }
+        <div class="card-body">
+            <h5 class="card-title">@OtherProfile.FirstName @OtherProfile.LastName</h5>
+            <p class="card-text">Do you want to block this user?</p>
+
+            <EditForm method="post" Model="Block" OnValidSubmit="AddBlock" FormName="create" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <button type="submit" class="btn btn-danger">Confirm Block</button>
+                <a href="/messages/overview" class="btn btn-secondary ms-2">Cancel</a>
+            </EditForm>
+        </div>
+    </div>
+}
 
 @code {
-    [SupplyParameterFromForm]
     private Block Block { get; set; } = new();
+    private Profile? OtherProfile;
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    [SupplyParameterFromQuery]
+    public string? BlockedUserId { get; set; }
+
+    [Parameter] 
+    public int matchId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var currentUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(currentUserId))
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+
+        using var context = DbFactory.CreateDbContext();
+
+        // Find the match by matchId
+        var match = await context.Match.FindAsync(matchId);
+        if (match is null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+
+        // Determine the other user in the match
+        var otherUserId = match.UserId_One == currentUserId ? match.UserId_Two : match.UserId_One;
+
+        // Lookup profile of the user being blocked
+        OtherProfile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == otherUserId);
+
+        // Auto-fill Block object
+        Block.BlockerId = currentUserId;
+        Block.BlockedUserId = otherUserId;
+        Block.BlockedDate = DateTime.UtcNow;
+    }
+
+
     private async Task AddBlock()
     {
         using var context = DbFactory.CreateDbContext();
+
+        // Save block record
         context.Block.Add(Block);
+
+        // Deactivate the match (if exists)
+        var match = await context.Match
+            .FirstOrDefaultAsync(m => (m.UserId_One == Block.BlockerId && m.UserId_Two == Block.BlockedUserId)
+                                   || (m.UserId_Two == Block.BlockerId && m.UserId_One == Block.BlockedUserId));
+        if (match != null)
+        {
+            match.Active = false;
+            context.Match.Update(match);
+        }
+
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/blocks");
+
+        // Redirect back to message overview
+        NavigationManager.NavigateTo("/messages/overview");
     }
 }

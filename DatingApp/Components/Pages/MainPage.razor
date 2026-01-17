@@ -92,7 +92,7 @@
                         <div class="action-row">
                             <a class="btn btn-danger" href="/swipes/create">Start Swiping</a>
                             <a class="btn btn-primary" href="/matches">Your Matches</a>
-                            <a class="btn btn-secondary" href="/messages/create">Messages</a>
+                            <a class="btn btn-secondary" href="/messages/overview">Messages</a>
                         </div>
                     </section>
                 }
@@ -116,10 +116,17 @@
         </section>
 
         <section class="section-card">
-            <h2>Reports & Moderation</h2>
+            <h2>User Management</h2>
             <div class="action-row">
-                <a class="btn btn-outline-secondary" href="/ReportPages/List">View Reports</a>
-                <a class="btn btn-outline-secondary" href="/BlockPages/List">Blocked Users</a>
+                <a class="btn btn-outline-secondary" href="/blocks">Manage Blocked Users</a>
+            </div>
+        </section>
+
+        <section class="section-card">
+            <h2>Messages</h2>
+            <p>View and moderate all user conversations.</p>
+            <div class="action-row">
+                <a class="btn btn-secondary" href="/messages">All Messages</a>
             </div>
         </section>
     </AuthorizeView>

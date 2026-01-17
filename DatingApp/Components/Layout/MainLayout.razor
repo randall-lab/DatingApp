@@ -23,15 +23,25 @@
 </div>
 
 @code {
+
     private bool ShowSidebar()
     {
         var url = NavigationManager.Uri.ToLower();
 
-        // ✅ Only show sidebar on these pages
+
+
+        // Only show sidebar on these pages
+
         return url.Contains("/profiles") ||
+
                url.Contains("/preferences") ||
+
                url.Contains("/swipe") ||
+
                url.Contains("/matches") ||
-               url.Contains("/messages");
+
+               url.Contains("/messages") ||
+
+               url.Contains("/blocks");
     }
 }

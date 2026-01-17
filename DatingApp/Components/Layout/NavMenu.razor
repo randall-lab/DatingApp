@@ -5,47 +5,107 @@
 
         <!-- Always visible -->
         <li class="nav-item">
-            <a class="nav-link" href="/main">Home</a>
+            <a class="nav-link" href="/main">
+                <span class="bi bi-house-door-fill-nav-menu"></span>
+                <span>Home</span>
+            </a>
         </li>
+
 
         <!-- User links -->
         <AuthorizeView Roles="User">
             <li class="nav-item">
-                <a class="nav-link" href="/profiles/manage">Profile</a>
+                <a class="nav-link" href="/profiles/manage">
+                    <span class="bi bi-person-nav-menu"></span>
+                    <span>Profile</span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="/preferences/manage">Preferences</a>
+                <a class="nav-link" href="/preferences/manage">
+                    <span class="bi bi-list-nested-nav-menu"></span>
+                    <span>Preferences</span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="/swipes/manage">Start Swiping</a>
+                <a class="nav-link" href="/swipes/manage">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="margin-right:0.75rem; flex:0 0 auto" viewBox="0 0 16 16" fill="white">
+                        <path fill-rule="evenodd" d="M12.146 11.354a.5.5 0 0 0 .708-.708L11.707 10H2.5a.5.5 0 0 0 0 1h9.207l-1.147 1.146a.5.5 0 0 0 .708.708l2-2zm-8.292-6.708a.5.5 0 0 1-.708.708L4.293 6H13.5a.5.5 0 0 1 0-1H4.293l1.147-1.146a.5.5 0 0 1 .708-.708l-2 2z" />
+                    </svg>
+                    <span>Start Swiping</span>
+                </a>
             </li>
+
+
             <li class="nav-item">
-                <a class="nav-link" href="/matches/manage">Matches</a>
+                <a class="nav-link" href="/matches/manage">
+                    <span class="bi bi-person-fill-nav-menu"></span>
+                    <span>Matches</span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="/messages/create">Messages</a>
+                <a class="nav-link" href="/messages/manage">
+                    <span class="bi bi-person-badge-nav-menu"></span>
+                    <span>Messages</span>
+                </a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/blocks/manage">
+                    <span class="bi bi-lock-nav-menu"></span>
+                    <span>Blocked Users</span>
+                </a>
+            </li>
+
         </AuthorizeView>
 
         <!-- Admin links -->
         <AuthorizeView Roles="Administrator">
             <li class="nav-item">
-                <a class="nav-link" href="/profiles">Manage Profiles</a>
+                <a class="nav-link" href="/profiles">
+                    <span class="bi bi-person-nav-menu"></span>
+                    <span>Manage Profiles</span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="/preferences">Manage Preferences</a>
+                <a class="nav-link" href="/preferences">
+                    <span class="bi bi-list-nested-nav-menu"></span>
+                    <span>Manage Preferences</span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="/ReportPages/List">Reports</a>
+                <a class="nav-link" href="/matches">
+                    <span class="bi bi-person-fill-nav-menu"></span>
+                    <span>Manage Matches</span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="/BlockPages/List">Blocked Users</a>
+                <a class="nav-link" href="/blocks">
+                    <span class="bi bi-lock-nav-menu"></span>
+                    <span>Blocked Users</span>
+                </a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/messages">
+                    <span class="bi bi-person-badge-nav-menu"></span>
+                    <span>Manage Messages</span>
+                </a>
+            </li>
+
         </AuthorizeView>
 
         <!-- Logout -->
         <li class="nav-item">
-            <a class="nav-link text-danger" href="/">Logout</a>
+            <a class="nav-link text-danger" href="/">
+                <span class="bi bi-arrow-bar-left-nav-menu"></span>
+                <span>Logout</span>
+            </a>
         </li>
     </ul>
 </nav>

@@ -1,0 +1,131 @@
+﻿/* 1. GLOBAL PAGE BACKGROUND */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important; /* Soft grey-blue matching brand */
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. CONTENT POSITIONING - Alignment for sidebar */
+h1, p:not(.card-body p), .card {
+    margin-left: 60px;
+    margin-right: 40px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* 3. PAGE TITLE */
+h1 {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+}
+
+/* 4. WARNING TEXT ("Are you sure...") */
+p:not(.card-body p) {
+    color: #475569;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+/* 5. PROFILE CARD - Light blue card matching Details.razor.css */
+.card {
+    background-color: #f0f9ff !important;
+    border-radius: 20px !important;
+    border: 1px solid #e0f2fe !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+.card-body.text-center {
+    padding: 40px !important;
+}
+
+/* 6. PROFILE PHOTO - Cyan border matching brand */
+.img-thumbnail {
+    border: 4px solid #00e5ff !important;
+    border-radius: 15px !important;
+    box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+}
+
+/* 7. PROFILE NAME (h3) */
+h3 {
+    color: #111b27;
+    font-weight: 800;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+/* 8. PROFILE INFORMATION ROWS */
+.card-body p {
+    color: #475569;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+    .card-body p strong {
+        color: #111b27;
+        font-weight: 700;
+        margin-right: 8px;
+    }
+
+/* 9. DELETE BUTTON - Red for danger, but matching brand button shape */
+.btn-danger {
+    background-color: #dc2626 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+/* 10. SECONDARY BUTTON - Dark navy border matching Details.razor.css */
+.btn-secondary {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 700 !important;
+    padding: 12px 28px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        background-color: #111b27 !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* 11. BUTTON CONTAINER GAP */
+.d-flex.gap-2 {
+    gap: 15px !important;
+}
+
+/* 12. RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+    h1, p:not(.card-body p), .card {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}

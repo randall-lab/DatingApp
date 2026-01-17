@@ -1,10 +1,10 @@
-﻿@page "/swipes/manage"
+﻿@page "/blocks/manage"
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthStateProvider
 
-<h3>Redirecting to swiping...</h3>
+<h3>Redirecting to Blocks...</h3>
 
 @code {
     protected override async Task OnInitializedAsync()
@@ -32,17 +32,7 @@
             return;
         }
 
-        // Look up preference record for this user
-        var preference = await context.Preference.FirstOrDefaultAsync(p => p.UserId == userId);
-
-        if (preference is null)
-        {
-            // No preferences yet → redirect to create
-            Nav.NavigateTo("/preferences/create", forceLoad: true);
-            return;
-        }
-
-        // Both profile and preferences exist → allow swiping
-        Nav.NavigateTo("/swipes/create", forceLoad: true);
+        // Profile exists → allow access to Blocks hub
+        Nav.NavigateTo("/blocks", forceLoad: true);
     }
 }
