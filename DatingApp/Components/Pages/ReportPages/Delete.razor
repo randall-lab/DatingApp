@@ -1,28 +1,43 @@
 ﻿@page "/reports/delete"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using DatingApp.Domain
 @inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Delete</PageTitle>
+@attribute [Authorize(Roles = "Administrator, User")]
 
-<h1>Delete</h1>
+<PageTitle>Delete Report</PageTitle>
 
-<p>Are you sure you want to delete this?</p>
-<div>
-    <h2>Report</h2>
-    <hr />
-    @if (report is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
+<h1>Delete Report</h1>
+
+@if (report is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>
+        @if (UserIsAdmin)
+        {
+            <span>Are you sure you want to <strong>permanently delete</strong> this report?</span>
+        }
+        else
+        {
+            <span>Are you sure you want to delete your report?</span>
+        }
+    </p>
+
+    <div>
+        <h2>Report Details</h2>
+        <hr />
         <dl class="row">
-            <dt class="col-sm-2">ReporterId</dt>
+            <dt class="col-sm-2">Reporter</dt>
             <dd class="col-sm-10">@report.ReporterId</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">ReportedUserId</dt>
+            <dt class="col-sm-2">Reported User</dt>
             <dd class="col-sm-10">@report.ReportedUserId</dd>
         </dl>
         <dl class="row">
@@ -30,22 +45,25 @@
             <dd class="col-sm-10">@report.Reason</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">ReportedDate</dt>
+            <dt class="col-sm-2">Reported Date</dt>
             <dd class="col-sm-10">@report.ReportedDate</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Status</dt>
             <dd class="col-sm-10">@report.Status</dd>
         </dl>
-        <EditForm method="post" Model="report" OnValidSubmit="DeleteReport" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(report is null)">Delete</button> |
-            <a href="/reports">Back to List</a>
+
+        <EditForm method="post" Model="report" OnValidSubmit="DeleteReport" FormName=@($"delete-report-{report.ReportId}")
+                  Enhance>
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="/reports" class="btn btn-secondary ms-2">Cancel</a>
         </EditForm>
-    }
-</div>
+    </div>
+}
 
 @code {
     private Report? report;
+    private bool UserIsAdmin;
 
     [SupplyParameterFromQuery]
     private int ReportId { get; set; }
@@ -57,8 +75,13 @@
 
         if (report is null)
         {
-            NavigationManager.NavigateTo("notfound");
+            NavigationManager.NavigateTo("/notfound");
+            return;
         }
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UserIsAdmin = user.IsInRole("Administrator");
     }
 
     private async Task DeleteReport()
@@ -66,6 +89,15 @@
         using var context = DbFactory.CreateDbContext();
         context.Report.Remove(report!);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/reports");
+
+        // Redirect based on role
+        if (UserIsAdmin)
+        {
+            NavigationManager.NavigateTo("/reports"); // back to moderation dashboard
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/messages/overview"); // back to user’s view
+        }
     }
 }

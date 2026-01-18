@@ -79,9 +79,8 @@
                         <EditForm Model="report" OnValidSubmit="() => OnBlockAndUnmatch(report.ReportId)" FormName=@($"block-report-{report.ReportId}") Enhance>
                             <button type="submit" class="btn-action delete">Block & Unmatch</button>
                         </EditForm>
-
-                        <a href="@($"reports/delete?reportid={report.ReportId}")" class="btn-action delete">Delete</a>
                     }
+                    <a href="@($"reports/delete?reportid={report.ReportId}")" class="btn-action delete">Delete</a>
                 </div>
             </div>
         }
