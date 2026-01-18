@@ -175,3 +175,36 @@ p:has(strong:contains("Status")) {
         width: 100%;
     }
 }
+
+.btn-action.back,
+.btn-action.delete {
+    font-weight: 800; /* match Edit */
+    font-size: 0.9rem; /* match Edit */
+    padding: 12px 28px; /* match Edit */
+    border-radius: 12px; /* match Edit */
+    text-transform: uppercase; /* match Edit */
+    transition: all 0.2s ease; /* match Edit */
+    text-decoration: none;
+}
+
+/* Keep their unique colors */
+.btn-action.back {
+    background-color: #111b27;
+    color: white;
+    border: none;
+}
+
+    .btn-action.back:hover {
+        background-color: #333;
+    }
+
+.btn-action.delete {
+    background-color: #dc2626;
+    border: 2px solid #dc2626;
+    color: white;
+}
+
+    .btn-action.delete:hover {
+        background-color: #b91c1c;
+        border-color: #b91c1c;
+    }

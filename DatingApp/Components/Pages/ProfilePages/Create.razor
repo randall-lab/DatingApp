@@ -41,7 +41,7 @@
             <div class="mb-3">
                 <label class="form-label">Gender</label>
                 <InputSelect class="form-control" @bind-value="Profile.Gender">
-                    <option value="">Select gender</option>
+                    <option value="">-- Select gender --</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Non-Binary">Non-Binary</option>
@@ -71,7 +71,7 @@
             <div class="mb-3">
                 <label class="form-label">Region</label>
                 <InputSelect class="form-control" @bind-value="Profile.RegionName">
-                    <option value="">Select region</option>
+                    <option value="">-- Select region --</option>
                     <option value="Central">Central</option>
                     <option value="East">East</option>
                     <option value="North">North</option>
@@ -107,7 +107,7 @@
 
         // System-controlled defaults
         Profile.IsVerified = false;
-        Profile.LastActiveDate = DateTime.UtcNow;
+        Profile.LastActiveDate = DateTime.Now;
     }
 
     private async Task AddProfile()

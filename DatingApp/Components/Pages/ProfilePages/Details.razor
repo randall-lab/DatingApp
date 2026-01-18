@@ -48,6 +48,11 @@ else
 
             <div class="mt-3">
                 <a class="btn btn-primary" href="@($"/profiles/edit?id={profile.ProfileId}")">Edit</a>
+                @if (UserIsAdmin)
+                {
+                    <a href="@($"/profiles")" class="btn-action back">Back to List</a>
+                    <a href="@($"profiles/delete?id={profile.ProfileId}")" class="btn-action delete">Delete</a>
+                }
             </div>
         </div>
     </div>
@@ -55,6 +60,7 @@ else
 
 @code {
     private Profile? profile;
+    private bool UserIsAdmin;
 
     [SupplyParameterFromQuery]
     private int Id { get; set; }
@@ -73,9 +79,9 @@ else
             return; 
         } 
         var userId = await UserManager.GetUserIdAsync(user); 
-        var isAdmin = await UserManager.IsInRoleAsync(user, "Administrator"); 
+        UserIsAdmin = await UserManager.IsInRoleAsync(user, "Administrator");
 
-        if (isAdmin) 
+        if (UserIsAdmin)
         { 
             // Admin can fetch by Id parameter 
             profile = await context.Profile.FirstOrDefaultAsync(p => p.ProfileId == Id); 

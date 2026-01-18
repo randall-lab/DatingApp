@@ -1,42 +1,70 @@
 ﻿@page "/swipes"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using DatingApp.Domain
 @using DatingApp.Data
-@implements IAsyncDisposable
-@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject IDbContextFactory<DatingAppContext> DbFactory
 
 @attribute [Authorize(Roles = "Administrator")]
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Swipes</PageTitle>
 
-<h1>Index</h1>
+<h1 class="welcome-title">Swipes</h1>
+<hr />
 
-<p>
-    <a href="swipes/create">Create New</a>
-</p>
-
-<QuickGrid Class="table" Items="context.Swipe">
-    <PropertyColumn Property="swipe => swipe.UserId_From" />
-    <PropertyColumn Property="swipe => swipe.UserId_To" />
-    <PropertyColumn Property="swipe => swipe.IsLiked" />
-    <PropertyColumn Property="swipe => swipe.SwipeDate" />
-
-    <TemplateColumn Context="swipe">
-        <a href="@($"swipes/edit?swipeid={swipe.SwipeId}")">Edit</a> |
-        <a href="@($"swipes/details?swipeid={swipe.SwipeId}")">Details</a> |
-        <a href="@($"swipes/delete?swipeid={swipe.SwipeId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+<div class="swipes-container">
+    @if (swipes == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (!swipes.Any())
+    {
+        <p class="no-data">No swipes found.</p>
+    }
+    else
+    {
+        @foreach (var s in swipes)
+        {
+            <div class="swipe-card">
+                <div class="admin-swipe-view">
+                    <div class="admin-user-info">
+                        <strong>From:</strong> @s.UserFromName <small>(@s.UserId_From)</small>
+                    </div>
+                    <div class="admin-user-info">
+                        <strong>To:</strong> @s.UserToName <small>(@s.UserId_To)</small>
+                    </div>
+                    <div class="swipe-meta">
+                        <strong>Date:</strong> @s.SwipeDate.ToShortDateString() |
+                        <span class="status-badge @(s.IsLiked ? "active" : "inactive")">
+                            @(s.IsLiked ? "Liked" : "Passed")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
 
 @code {
-    private DatingAppContext context = default!;
+    private List<Swipe>? swipes;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
-    }
+        using var db = DbFactory.CreateDbContext();
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+        swipes = await db.Swipe.ToListAsync();
+
+        foreach (var s in swipes)
+        {
+            s.UserFromName = db.Profile
+                .Where(p => p.UserId == s.UserId_From)
+                .Select(p => p.FirstName + " " + p.LastName)
+                .FirstOrDefault();
+
+            s.UserToName = db.Profile
+                .Where(p => p.UserId == s.UserId_To)
+                .Select(p => p.FirstName + " " + p.LastName)
+                .FirstOrDefault();
+        }
+    }
 }

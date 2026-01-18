@@ -132,6 +132,10 @@ hr {
     text-align: center;
     transition: all 0.2s;
 }
+    .btn-action.details {
+        background-color: #2563eb;
+        color: white;
+    }
 
     .btn-action.edit {
         background-color: #111b27;
@@ -139,9 +143,9 @@ hr {
     }
 
     .btn-action.delete {
-        background-color: transparent;
+        background-color: #dc2626;
         border: 2px solid #dc2626;
-        color: #dc2626;
+        color: white;
     }
 
     .btn-action:hover {

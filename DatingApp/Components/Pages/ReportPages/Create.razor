@@ -1,0 +1,110 @@
+﻿@page "/reports/create/{matchId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@inject IDbContextFactory<DatingApp.Data.DatingAppContext> DbFactory
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+
+@attribute [Authorize(Roles = "User")]
+
+<PageTitle>Report User</PageTitle>
+
+<h2>Report User</h2>
+<hr />
+
+@if (OtherProfile is null)
+{
+    <p>Loading user info...</p>
+}
+else
+{
+    <div class="card" style="width: 20rem;">
+        @if (!string.IsNullOrEmpty(OtherProfile.PhotoURL))
+        {
+            <img src="@OtherProfile.PhotoURL" class="card-img-top"
+                 alt="Profile Photo" style="object-fit:cover; height:200px;" />
+        }
+        <div class="card-body">
+            <h5 class="card-title">@OtherProfile.FirstName @OtherProfile.LastName</h5>
+            <p class="card-text">Do you want to report this user?</p>
+
+            <EditForm method="post" Model="Report" OnValidSubmit="AddReport" FormName="create" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label class="form-label">Reason</label>
+                    <InputSelect class="form-control" @bind-Value="Report.Reason">
+                        <option value="">-- Select reason --</option>
+                        <option value="Harassment">Harassment</option>
+                        <option value="Spam">Spam</option>
+                        <option value="Inappropriate Content">Inappropriate Content</option>
+                        <option value="Other">Other</option>
+                    </InputSelect>
+                    <ValidationMessage For="() => Report.Reason" class="text-danger" />
+                </div>
+
+                <button type="submit" class="btn btn-danger">Submit Report</button>
+                <a href="/messages/overview" class="btn btn-secondary ms-2">Cancel</a>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [SupplyParameterFromForm]
+    private Report Report { get; set; } = new();
+
+    private Profile? OtherProfile;
+
+    [Parameter]
+    public int matchId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var currentUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(currentUserId))
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+
+        using var context = DbFactory.CreateDbContext();
+
+        // Find the match by matchId
+        var match = await context.Match.FindAsync(matchId);
+        if (match is null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+
+        // Determine the other user in the match
+        var otherUserId = match.UserId_One == currentUserId ? match.UserId_Two : match.UserId_One;
+
+        // Lookup profile of the user being reported
+        OtherProfile = await context.Profile.FirstOrDefaultAsync(p => p.UserId == otherUserId);
+
+        // Auto-fill Report object
+        Report.ReporterId = currentUserId;
+        Report.ReportedUserId = otherUserId;
+        Report.ReportedDate = DateTime.Now;
+        Report.Status = "Pending";
+    }
+
+    private async Task AddReport()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        // Save report record
+        context.Report.Add(Report);
+        await context.SaveChangesAsync();
+
+        // Redirect back to message overview
+        NavigationManager.NavigateTo("/messages/overview");
+    }
+}

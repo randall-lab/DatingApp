@@ -1,0 +1,113 @@
+﻿/* --- 1. GLOBAL LAYOUT --- */
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f4f8 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+h1.welcome-title, hr, .swipes-container {
+    margin-left: 60px;
+    margin-right: 40px;
+}
+
+h1.welcome-title {
+    color: #111b27;
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-top: 40px;
+    letter-spacing: -1.5px;
+}
+
+hr {
+    border-color: #e0f2fe;
+    margin-bottom: 30px;
+}
+
+/* --- 2. SWIPE CARD --- */
+.swipes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+.swipe-card {
+    background-color: #f0f9ff;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e0f2fe;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+    .swipe-card:hover {
+        transform: translateY(-3px);
+    }
+
+/* --- 3. ADMIN SWIPE VIEW --- */
+.admin-swipe-view {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-user-info {
+    color: #111b27;
+    font-size: 1rem;
+}
+
+.swipe-meta {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* --- 4. STATUS BADGE --- */
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 50px;
+    display: inline-block;
+}
+
+    .status-badge.active {
+        background-color: #ccfbf1;
+        color: #0d9488;
+    }
+
+    .status-badge.inactive {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+
+/* --- 5. ACTION BUTTONS --- */
+.swipe-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-action {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+    .btn-action.delete {
+        background-color: transparent;
+        border: 1px solid #dc2626;
+        color: #dc2626;
+    }
+
+    .btn-action:hover {
+        opacity: 0.8;
+    }

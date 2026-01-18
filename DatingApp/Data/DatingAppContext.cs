@@ -35,6 +35,11 @@ namespace DatingApp.Data
 
             builder.Entity<Preference>()
                 .Ignore(p => p.UserFullName);
+
+            builder.Entity<Swipe>()
+                .Ignore(s => s.UserFromName)
+                .Ignore(s => s.UserToName);
         }
+        public DbSet<DatingApp.Domain.Report> Report { get; set; } = default!;
     }
 }

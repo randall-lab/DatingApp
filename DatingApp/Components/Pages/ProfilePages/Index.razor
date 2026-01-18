@@ -53,6 +53,7 @@
 
                 @* Admin Actions *@
                 <div class="profile-actions">
+                    <a href="@($"profiles/details?id={profile.ProfileId}")" class="btn-action details">Details</a>
                     <a href="@($"profiles/edit?id={profile.ProfileId}")" class="btn-action edit">Edit</a>
                     <a href="@($"profiles/delete?id={profile.ProfileId}")" class="btn-action delete">Delete</a>
                 </div>

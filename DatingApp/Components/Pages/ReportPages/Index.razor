@@ -1,0 +1,181 @@
+﻿@page "/reports"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using DatingApp.Domain
+@using DatingApp.Data
+@inject IDbContextFactory<DatingAppContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize(Roles = "Administrator, User")]
+
+<PageTitle>Reports</PageTitle>
+
+<h1 class="welcome-title">Reports</h1>
+<hr />
+
+<div class="reports-container">
+    @if (reports == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else if (!reports.Any())
+    {
+        <p class="no-data">No reports found.</p>
+    }
+    else
+    {
+        @foreach (var report in reports)
+        {
+            <div class="report-card">
+                <div class="report-main">
+                    @if (!UserIsAdmin)
+                    {
+                        @* USER VIEW *@
+                        <div class="photo-wrapper">
+                            @if (!string.IsNullOrEmpty(report.ReportedPhoto))
+                            {
+                                <img src="@report.ReportedPhoto" alt="Profile Photo" class="profile-img-circle" />
+                            }
+                            else
+                            {
+                                <div class="profile-img-circle no-photo">No Photo</div>
+                            }
+                        </div>
+
+                        <div class="report-info">
+                            <h2 class="profile-name">@report.ReportedName</h2>
+                            <p class="report-meta">Reported on: @report.ReportedDate.ToShortDateString()</p>
+                            <p class="report-meta">Reason: @report.Reason</p>
+                            <p class="report-meta">
+                                <strong>Status:</strong>
+                                <span class="status-badge @(report.Status == "Pending" ? "inactive" : "active")">
+                                    @report.Status
+                                </span>
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        @* ADMIN VIEW *@
+                        <div class="report-info admin-font">
+                            <p><strong>Reporter:</strong> @report.ReporterName <small>(@report.ReporterId)</small></p>
+                            <p><strong>Reported:</strong> @report.ReportedName <small>(@report.ReportedUserId)</small></p>
+                            <p><strong>Date:</strong> @report.ReportedDate.ToShortDateString()</p>
+                            <p><strong>Reason:</strong> @report.Reason</p>
+                            <p class="report-meta">
+                                <strong>Status:</strong>
+                                <span class="status-badge @(report.Status == "Pending" ? "inactive" : "active")">
+                                    @report.Status
+                                </span>
+                            </p>
+                        </div>
+                    }
+                </div>
+
+                <div class="report-actions">
+                    @if (UserIsAdmin)
+                    {
+                        <EditForm Model="report" OnValidSubmit="() => OnBlockAndUnmatch(report.ReportId)" FormName=@($"block-report-{report.ReportId}") Enhance>
+                            <button type="submit" class="btn-action delete">Block & Unmatch</button>
+                        </EditForm>
+
+                        <a href="@($"reports/delete?reportid={report.ReportId}")" class="btn-action delete">Delete</a>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<ReportViewModel>? reports;
+    private bool UserIsAdmin;
+    private string? currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var db = DbFactory.CreateDbContext();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UserIsAdmin = user.IsInRole("Administrator");
+
+        currentUserId = user.FindFirst("sub")?.Value
+                     ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        IQueryable<Report> query = UserIsAdmin
+            ? db.Report
+            : db.Report.Where(r => r.ReporterId == currentUserId);
+
+        var list = await query.ToListAsync();
+
+        reports = new List<ReportViewModel>();
+        foreach (var r in list)
+        {
+            var reporterProfile = db.Profile.FirstOrDefault(p => p.UserId == r.ReporterId);
+            var reportedProfile = db.Profile.FirstOrDefault(p => p.UserId == r.ReportedUserId);
+
+            reports.Add(new ReportViewModel
+            {
+                ReportId = r.ReportId,
+                ReporterId = r.ReporterId ?? "",
+                ReportedUserId = r.ReportedUserId ?? "",
+                ReportedDate = r.ReportedDate,
+                Reason = r.Reason ?? "",
+                Status = r.Status ?? "Pending",
+                ReporterName = reporterProfile != null ? reporterProfile.FirstName + " " + reporterProfile.LastName : "",
+                ReportedName = reportedProfile != null ? reportedProfile.FirstName + " " + reportedProfile.LastName : "",
+                ReportedPhoto = reportedProfile?.PhotoURL
+            });
+        }
+    }
+
+    private async Task OnBlockAndUnmatch(int reportId)
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        var report = await context.Report.FindAsync(reportId);
+        if (report == null) return;
+
+        // Create Block record
+        var block = new Block
+        {
+            BlockerId = report.ReporterId,
+            BlockedUserId = report.ReportedUserId,
+            BlockedDate = DateTime.UtcNow
+        };
+        context.Block.Add(block);
+
+        // Deactivate match if exists
+        var match = await context.Match
+            .FirstOrDefaultAsync(m => (m.UserId_One == report.ReporterId && m.UserId_Two == report.ReportedUserId)
+                                   || (m.UserId_Two == report.ReporterId && m.UserId_One == report.ReportedUserId));
+        if (match != null)
+        {
+            match.Active = false;
+            context.Match.Update(match);
+        }
+
+        // Update report status
+        report.Status = "Resolved";
+        context.Report.Update(report);
+
+        await context.SaveChangesAsync();
+
+        // Redirect to Blocks so admin sees the new block
+        NavigationManager.NavigateTo("/blocks");
+    }
+
+    private class ReportViewModel
+    {
+        public int ReportId { get; set; }
+        public string ReporterId { get; set; } = "";
+        public string ReportedUserId { get; set; } = "";
+        public DateTime ReportedDate { get; set; }
+        public string Reason { get; set; } = "";
+        public string Status { get; set; } = "";
+        public string ReporterName { get; set; } = "";
+        public string ReportedName { get; set; } = "";
+        public string? ReportedPhoto { get; set; }
+    }
+}
