@@ -59,14 +59,6 @@ else
             <p class="mt-2" style="max-width:200px;">Selected Range: @Preference.MinAge – @Preference.MaxAge</p>
         </div>
 
-        @* Search Radius - Matches Create.razor sizing *@
-        <div class="mb-3">
-            <label class="form-label">Search Radius (km)</label>
-            <InputNumber @bind-Value="Preference.LocationRadius"
-                         class="form-control form-control-sm"
-                         style="max-width:100px;" />
-        </div>
-
         <button class="btn btn-primary" style="max-width: 380px">Save</button>
     </EditForm>
 }
@@ -107,7 +99,6 @@ else
         existing.PreferredGender = Preference.PreferredGender;
         existing.MinAge = Preference.MinAge;
         existing.MaxAge = Preference.MaxAge;
-        existing.LocationRadius = Preference.LocationRadius;
         existing.UserId = userId;
 
         await context.SaveChangesAsync();

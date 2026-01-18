@@ -30,7 +30,6 @@ else
 
             <p><strong>Preferred Gender:</strong> @(string.IsNullOrEmpty(Preference.PreferredGender) ? "Not set" : Preference.PreferredGender)</p>
             <p><strong>Age Range:</strong> @Preference.MinAge – @Preference.MaxAge</p>
-            <p><strong>Search Radius:</strong> @Preference.LocationRadius km</p>
 
             <div class="mt-3">
                 <a class="btn btn-primary" href="@($"/preferences/edit?id={Preference.PreferenceId}")">Edit</a>

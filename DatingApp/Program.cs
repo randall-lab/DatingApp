@@ -18,6 +18,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+//Add the API controller
+builder.Services.AddControllers();
+builder.Services.AddHttpClient();
+
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -43,7 +47,11 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton<IEmailSender<DatingAppUser>, IdentityNoOpEmailSender>();
 
+
 var app = builder.Build();
+
+//Add the Default controller route
+app.MapDefaultControllerRoute();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -67,5 +75,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();;
+
+// ✅ map controllers (instead of only default route)
+app.MapControllers();
 
 app.Run();

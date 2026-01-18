@@ -27,7 +27,6 @@ else
 
             <p><strong>Preferred Gender:</strong> @(string.IsNullOrEmpty(preference.PreferredGender) ? "Not set" : preference.PreferredGender)</p>
             <p><strong>Age Range:</strong> @preference.MinAge – @preference.MaxAge</p>
-            <p><strong>Search Radius:</strong> @preference.LocationRadius km</p>
 
             <!-- Delete-->
             <EditForm method="post" Model="preference" OnValidSubmit="DeletePreference" FormName="delete" Enhance>
