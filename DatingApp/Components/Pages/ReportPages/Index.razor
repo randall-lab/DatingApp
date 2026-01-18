@@ -27,57 +27,37 @@
     {
         @foreach (var report in reports)
         {
-            <div class="report-card">
-                <div class="report-main">
-                    @if (!UserIsAdmin)
-                    {
-                        @* USER VIEW *@
-                        <div class="photo-wrapper">
-                            @if (!string.IsNullOrEmpty(report.ReportedPhoto))
-                            {
-                                <img src="@report.ReportedPhoto" alt="Profile Photo" class="profile-img-circle" />
-                            }
-                            else
-                            {
-                                <div class="profile-img-circle no-photo">No Photo</div>
-                            }
-                        </div>
+            <div class="report-card profile-card">
+                <div class="report-main profile-main">
+                    <div class="photo-wrapper">
+                        @if (!string.IsNullOrEmpty(report.ReportedPhoto))
+                        {
+                            <img src="@report.ReportedPhoto" alt="Profile Photo" class="profile-img-circle" />
+                        }
+                        else
+                        {
+                            <div class="profile-img-circle no-photo">No Photo</div>
+                        }
+                    </div>
 
-                        <div class="report-info">
-                            <h2 class="profile-name">@report.ReportedName</h2>
-                            <p class="report-meta">Reported on: @report.ReportedDate.ToShortDateString()</p>
-                            <p class="report-meta">Reason: @report.Reason</p>
-                            <p class="report-meta">
-                                <strong>Status:</strong>
-                                <span class="status-badge @(report.Status == "Pending" ? "inactive" : "active")">
-                                    @report.Status
-                                </span>
-                            </p>
-                        </div>
-                    }
-                    else
-                    {
-                        @* ADMIN VIEW *@
-                        <div class="report-info admin-font">
-                            <p><strong>Reporter:</strong> @report.ReporterName <small>(@report.ReporterId)</small></p>
-                            <p><strong>Reported:</strong> @report.ReportedName <small>(@report.ReportedUserId)</small></p>
-                            <p><strong>Date:</strong> @report.ReportedDate.ToShortDateString()</p>
-                            <p><strong>Reason:</strong> @report.Reason</p>
-                            <p class="report-meta">
-                                <strong>Status:</strong>
-                                <span class="status-badge @(report.Status == "Pending" ? "inactive" : "active")">
-                                    @report.Status
-                                </span>
-                            </p>
-                        </div>
-                    }
+                    <div class="report-info profile-info">
+                        <h2 class="profile-name">@report.ReportedName</h2>
+                        <p class="report-meta">Reported on: @report.ReportedDate.ToShortDateString()</p>
+                        <p class="report-meta">Reason: @report.Reason</p>
+                        <p class="report-meta">
+                            <strong>Status:</strong>
+                            <span class="status-badge @(report.Status == "Pending" ? "inactive" : "active")">
+                                @report.Status
+                            </span>
+                        </p>
+                    </div>
                 </div>
 
-                <div class="report-actions">
+                <div class="report-actions profile-actions">
                     @if (UserIsAdmin)
                     {
                         <EditForm Model="report" OnValidSubmit="() => OnBlockAndUnmatch(report.ReportId)" FormName=@($"block-report-{report.ReportId}") Enhance>
-                            <button type="submit" class="btn-action delete">Block & Unmatch</button>
+                            <button type="submit" class="btn-action block">Block & Unmatch</button>
                         </EditForm>
                     }
                     <a href="@($"reports/delete?reportid={report.ReportId}")" class="btn-action delete">Delete</a>

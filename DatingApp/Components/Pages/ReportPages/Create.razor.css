@@ -1,0 +1,108 @@
+﻿/* --- 1. PAGE LAYOUT --- */
+h2 {
+    color: #111b27;
+    font-weight: 900;
+    text-align: left; /* Align title to the left */
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+}
+
+/* --- 2. THE CONTENT CARD --- */
+.card {
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-left: 0; /* Align card to the left */
+    margin-right: auto;
+    max-width: 500px; /* Keep the card a reasonable size */
+    overflow: hidden;
+    background: white;
+}
+
+.card-img-top {
+    border-bottom: 4px solid #ffeb3b; /* Yellow accent line */
+    object-fit: cover;
+    height: 250px;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.card-title {
+    color: #111b27;
+    font-weight: 800;
+}
+
+/* --- 3. FORM INPUTS --- */
+.form-label {
+    font-weight: 700;
+    color: #111b27;
+    margin-top: 15px;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    padding: 10px;
+}
+
+/* --- 4. BUTTON ROW (Left Aligned) --- */
+.button-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* Submit Report: Vibrant Cyan (Matching Discover/Save) */
+.btn-warning {
+    background-color: #00e5ff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 800 !important;
+    padding: 12px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    flex: 1; /* Equal width */
+    text-decoration: none !important;
+    display: flex;
+    justify-content: center;
+}
+
+/* Cancel: Dark Navy (Matching Back/Secondary) */
+.btn-secondary {
+    background-color: #111b27 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    flex: 1; /* Equal width */
+    text-decoration: none !important;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-danger {
+    background-color: #D4AF37 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    flex: 1; /* Equal width */
+    text-decoration: none !important;
+    display: flex;
+    justify-content: center;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}

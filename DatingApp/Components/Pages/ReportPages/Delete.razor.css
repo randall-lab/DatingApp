@@ -1,0 +1,45 @@
+﻿/* --- CONFIRMATION BOX --- */
+.delete-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #fee2e2;
+}
+
+h1 {
+    color: #ef4444; /* Danger Red */
+    font-weight: 900;
+}
+
+dt {
+    color: #111b27;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+dd {
+    margin-bottom: 15px;
+    color: #475569;
+}
+
+/* --- DANGER BUTTONS --- */
+.btn-danger {
+    background-color: #ef4444 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 30px !important;
+    font-weight: 800 !important;
+    color: white !important;
+}
+
+.btn-secondary {
+    background-color: #f1f5f9 !important;
+    border: 2px solid #111b27 !important;
+    color: #111b27 !important;
+    border-radius: 12px !important;
+    padding: 10px 30px !important;
+    text-decoration: none !important;
+}
