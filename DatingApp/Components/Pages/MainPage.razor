@@ -49,10 +49,9 @@
             Your profile is active — start discovering meaningful connections today.
         </p>
 
-        <!-- USER CONTENT -->
+        <!-- Section 1: Profile -->
         <section class="section-card">
             <h2>Your Profile</h2>
-
             @if (UserProfile is null)
             {
                 <p>You haven't created your profile yet.</p>
@@ -65,40 +64,46 @@
                 <ul>
                     <li>Last updated: @UserProfile.LastActiveDate.ToShortDateString()</li>
                 </ul>
-
                 <div class="action-row">
                     <a class="btn btn-primary" href="@($"/profiles/edit?id={UserProfile.ProfileId}")">Edit Profile</a>
                     <a class="btn btn-outline-primary" href="@($"/profiles/details?id={UserProfile.ProfileId}")">View Profile</a>
                 </div>
-
-                <h3>Your Preferences</h3>
-                @if (UserPreference is null)
-                {
-                    <p>You haven't set your preferences yet.</p>
-                    <div class="action-row">
-                        <a class="btn btn-outline-primary" href="/preferences/create">Set Preferences</a>
-                    </div>
-                }
-                else
-                {
-                    <div class="action-row">
-                        <a class="btn btn-outline-primary" href="@($"/preferences/edit?id={UserPreference.PreferenceId}")">Edit Preferences</a>
-                        <a class="btn btn-outline-primary" href="@($"/preferences/details?id={UserPreference.PreferenceId}")">View Preferences</a>
-                    </div>
-
-                    <!-- Only show Start Matching if preferences exist -->
-                    <section class="section-card">
-                        <h2>Start Matching</h2>
-                        <div class="action-row">
-                            <a class="btn btn-danger" href="/swipes/create">Start Swiping</a>
-                            <a class="btn btn-primary" href="/matches">Your Matches</a>
-                            <a class="btn btn-secondary" href="/messages/overview">Messages</a>
-                        </div>
-                    </section>
-                }
             }
         </section>
+
+        <!-- Section 2: Preferences -->
+        <section class="section-card">
+            <h2>Your Preferences</h2>
+            @if (UserPreference is null)
+            {
+                <p>You haven't set your preferences yet.</p>
+                <div class="action-row">
+                    <a class="btn btn-primary" href="/preferences/create">Set Preferences</a>
+                </div>
+            }
+            else
+            {
+                <div class="action-row">
+                    <a class="btn btn-primary" href="@($"/preferences/edit?id={UserPreference.PreferenceId}")">Edit Preferences</a>
+                    <a class="btn btn-outline-primary" href="@($"/preferences/details?id={UserPreference.PreferenceId}")">View Preferences</a>
+                </div>
+            }
+        </section>
+
+        <!-- Section 3: Matching -->
+        @if (UserPreference is not null)
+        {
+            <section class="section-card">
+                <h2>Start Matching</h2>
+                <div class="action-row">
+                    <a class="btn btn-danger" href="/swipes/create">Start Swiping</a>
+                    <a class="btn btn-primary" href="/matches">Your Matches</a>
+                    <a class="btn btn-secondary" href="/messages/overview">Messages</a>
+                </div>
+            </section>
+        }
     </AuthorizeView>
+
 
     <AuthorizeView Roles="Administrator">
         <!-- ADMIN CONTENT -->
@@ -118,7 +123,7 @@
         <section class="section-card">
             <h2>User Management</h2>
             <div class="action-row">
-                <a class="btn btn-outline-secondary" href="/blocks">Manage Blocked Users</a>
+                <a class="btn btn-danger" href="/blocks">Manage Blocked Users</a>
             </div>
         </section>
 

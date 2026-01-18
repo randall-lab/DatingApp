@@ -60,11 +60,11 @@ form {
     align-items: center;
 }
 
-/* THE BLACK BUTTON (Unblock / Delete) */
+/* THE RED BUTTON (Unblock / Delete) */
 .btn-danger {
-    background-color: #111b27 !important; /* Brand Dark Navy / Black */
-    color: #ffffff !important;
-    border: none !important;
+    background-color: transparent;
+    border: 2px solid #dc2626;
+    color: #dc2626;
     padding: 12px 28px !important;
     border-radius: 10px !important;
     font-weight: 800 !important;

@@ -84,12 +84,12 @@ ul {
     }
 
 /* --- 7. BRANDED BUTTONS --- */
-/* Primary/Danger Action: Vibrant Cyan */
-.btn-primary, .btn-danger {
+/* --- Primary Action: Vibrant Cyan --- */ 
+.btn-primary {
     background-color: #00e5ff !important;
     border: none !important;
     border-radius: 12px !important;
-    color: #111b27 !important; /* Navy text for readability */
+    color: #111b27 !important;
     font-weight: 800 !important;
     padding: 10px 24px !important;
     text-transform: uppercase;
@@ -97,8 +97,48 @@ ul {
     transition: all 0.2s ease;
 }
 
-/* Secondary/Outline: Dark Navy Border */
-.btn-outline-primary, .btn-secondary, .btn-outline-secondary {
+/* --- Danger Action: Red --- */ 
+.btn-danger {
+    background-color: #ef4444 !important; /* Tailwind red-500 */
+    border: none !important;
+    border-radius: 12px !important;
+    color: #fff !important;
+    font-weight: 800 !important;
+    padding: 10px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+/* --- Outline Primary: Cyan Border --- */
+.btn-outline-primary {
+    background-color: rgba(0, 229, 255, 0.1) !important; /* optional tint */
+    border: 2px solid #00e5ff !important; /* cyan border */
+    border-radius: 12px !important;
+    color: #000000 !important; /* solid black text */
+    font-weight: 700 !important;
+    padding: 10px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+
+/* --- Secondary: Dark Navy Solid --- */
+.btn-secondary {
+    background-color: #111b27 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    padding: 10px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+/* --- Outline Secondary: Dark Navy Border --- */
+.btn-outline-secondary {
     background-color: transparent !important;
     border: 2px solid #111b27 !important;
     border-radius: 12px !important;

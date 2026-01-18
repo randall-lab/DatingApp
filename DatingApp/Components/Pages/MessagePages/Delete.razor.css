@@ -1,0 +1,117 @@
+﻿/* --- 1. PAGE LAYOUT --- */
+:host {
+    display: block;
+    padding: 40px 20px;
+    background-color: #f0f4f8; /* Soft grey-blue background */
+    min-height: 100vh;
+}
+
+h1 {
+    color: #111b27; /* Dark Navy */
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+p {
+    color: #475569;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+/* --- 2. CONVERSATION CARD --- */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+h3 {
+    color: #111b27;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-left: 4px solid #00e5ff; /* Cyan accent line */
+    padding-left: 15px;
+}
+
+/* --- 3. MESSAGE LIST PREVIEW --- */
+ul {
+    list-style: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto; /* Scrollable if conversation is long */
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #edf2f7;
+}
+
+li {
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+    li:last-child {
+        border-bottom: none;
+    }
+
+    li strong {
+        color: #111b27;
+    }
+
+.text-muted {
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 2px;
+}
+
+/* --- 4. BRANDED BUTTONS --- */
+/* The "Delete All" button is an action, so we use the Cyan theme */
+.btn-danger {
+    background-color: #ff3366 !important; /* Overriding Cyan to Red for danger warning */
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 12px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(255, 51, 102, 0.3);
+}
+
+    .btn-danger:hover {
+        background-color: #e62e5c !important;
+        transform: translateY(-2px);
+    }
+
+/* The "Back" button uses the Navy Outline theme */
+.btn-secondary {
+    background-color: transparent !important;
+    border: 2px solid #111b27 !important;
+    border-radius: 12px !important;
+    color: #111b27 !important;
+    font-weight: 800 !important;
+    padding: 12px 24px !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-secondary:hover {
+        background-color: #111b27 !important;
+        color: #ffffff !important;
+    }
+
+/* Layout for buttons */
+.d-flex.gap-2 {
+    gap: 15px !important;
+}
